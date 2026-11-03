@@ -38,6 +38,17 @@
   --ume:#f27a9d; --ume-hi:#ffd0dd; --ume-lo:#c94770; --bark:#8a6247;
   --leaf:#72c27a; --leaf-hi:#b6e8a8; --leaf-lo:#3f8a48;
   --ai:#7aa2ff; --fuji:#b293ec; color-scheme:dark}
+/* seasons: winter=梅(既定) spring=桜 summer=紫陽花 autumn=紅葉 */
+:root[data-season="spring"]{--bg:#fdf3f6;--hair:#f5dbe4;--wine:#8a3a5c;--wine2:#b25d80;--ume:#f08aa8;--ume-hi:#ffdbe6;--ume-lo:#cf5b80}
+:root[data-season="summer"]{--bg:#f1f5fb;--hair:#dbe3f1;--paper:#fcfdff;--ink:#1f2a44;--muted:#5d6a86;--wine:#22345f;--wine2:#3b5998;--ume:#6a8be0;--ume-hi:#cfdcff;--ume-lo:#3f5fb5;--gold-soft:#d9dff0}
+:root[data-season="autumn"]{--bg:#fbf3ec;--hair:#f0dccb;--paper:#fffcf9;--ink:#3a2016;--muted:#7a5e50;--wine:#5c2312;--wine2:#8f3a1a;--ume:#e2683a;--ume-hi:#ffc79c;--ume-lo:#b8431c;--leaf:#c7862a;--leaf-hi:#f3d07a;--leaf-lo:#975e14}
+@media (prefers-color-scheme: dark){
+:root[data-season="spring"]:not([data-theme="light"]){--bg:#1d0f16;--hair:#45263a;--wine:#3d1328;--wine2:#62233f;--ume:#f49ab4;--ume-hi:#ffe0ea;--ume-lo:#d06a8c}
+:root[data-season="summer"]:not([data-theme="light"]){--bg:#0f1420;--paper:#18203a;--ink:#eef2fb;--muted:#a9b5d1;--hair:#2a3556;--wine:#121c38;--wine2:#22325e;--ume:#8aa6ff;--ume-hi:#d6e1ff;--ume-lo:#5b79d6;--gold-soft:#3a3f55}
+:root[data-season="autumn"]:not([data-theme="light"]){--bg:#1b100b;--paper:#2a1912;--ink:#fbefe7;--muted:#c9ab98;--hair:#45291d;--wine:#3a1409;--wine2:#5e2412;--ume:#f08458;--ume-hi:#ffd0ae;--ume-lo:#c95a2c;--leaf:#e0a443;--leaf-hi:#f7dc95;--leaf-lo:#a8711f}}
+:root[data-season="spring"][data-theme="dark"]{--bg:#1d0f16;--hair:#45263a;--wine:#3d1328;--wine2:#62233f;--ume:#f49ab4;--ume-hi:#ffe0ea;--ume-lo:#d06a8c}
+:root[data-season="summer"][data-theme="dark"]{--bg:#0f1420;--paper:#18203a;--ink:#eef2fb;--muted:#a9b5d1;--hair:#2a3556;--wine:#121c38;--wine2:#22325e;--ume:#8aa6ff;--ume-hi:#d6e1ff;--ume-lo:#5b79d6;--gold-soft:#3a3f55}
+:root[data-season="autumn"][data-theme="dark"]{--bg:#1b100b;--paper:#2a1912;--ink:#fbefe7;--muted:#c9ab98;--hair:#45291d;--wine:#3a1409;--wine2:#5e2412;--ume:#f08458;--ume-hi:#ffd0ae;--ume-lo:#c95a2c;--leaf:#e0a443;--leaf-hi:#f7dc95;--leaf-lo:#a8711f}
 html,body{height:100%}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7}
@@ -252,7 +263,23 @@ a.go{text-decoration:none}
 .prow .t .who{margin-left:6px;font-size:11px;padding:0 8px;vertical-align:1px}
 .tgt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-weight:700}
 
+/* countdown */
+.drow{display:flex;align-items:center;gap:14px;padding:10px 0;border-top:1px dashed var(--hair)}
+.dleft{min-width:66px;display:flex;align-items:baseline;justify-content:center;gap:2px;color:var(--ume-lo)}
+.dleft b{font-family:var(--latin);font-weight:600;font-size:30px;line-height:1;font-variant-numeric:tabular-nums}
+.dleft small{font-size:11px;font-weight:700}
+.dleft.today b{font-family:var(--display);font-size:20px}
+.drow .t{flex:1;min-width:0;font-weight:500;overflow-wrap:anywhere}
+.drow .d{display:block;font-size:12px;color:var(--muted);font-weight:400}
+.hol{font-size:11px;font-weight:700;color:var(--gold-lo);border:1px solid var(--gold);border-radius:999px;padding:0 8px;margin-left:6px;vertical-align:1px}
+.yr{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;white-space:nowrap}
+.yr input{width:20px;height:20px;accent-color:var(--wine)}
 </style>
+<script>
+/* 季節（冬=梅・春=桜・夏=紫陽花・秋=紅葉）。?season=spring などで試せる */
+(function(){var q=(location.search.match(/[?&]season=(\w+)/)||[])[1];var m=new Date().getMonth()+1;
+document.documentElement.setAttribute("data-season",/^(winter|spring|summer|autumn)$/.test(q||"")?q:(m<=2||m===12?"winter":m<=5?"spring":m<=8?"summer":"autumn"));})();
+</script>
 
 </head>
 <body>
@@ -377,7 +404,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     ["情報","じょうほう"],["住所","じゅうしょ"],["緊急","きんきゅう"],["連絡先","れんらくさき"],["実家","じっか"],["家系図","かけいず"],["内容","ないよう"],
     ["項目","こうもく"],["警察","けいさつ"],["消防","しょうぼう"],["救急","きゅうきゅう"],["相談","そうだん"],["番号","ばんごう"],["電話","でんわ"],
     ["手伝","てつだ"],["承認","しょうにん"],["交換","こうかん"],["申請","しんせい"],["見送","みおく"],["差","さ"],["引","ひ"],["押","お"],
-    ["買","か"],["送","おく"],["家","いえ"],["先","さき"],["日","ひ"],["書","か"],["伝","つた"],["使","つか"],["開","あ"],["移","うつ"],["板","ばん"],["中","ちゅう"],["学習","がくしゅう"],["問題数","もんだいすう"],["問題","もんだい"],["正答率","せいとうりつ"],["苦手","にがて"],["記録","きろく"],["単元","たんげん"],["教科別","きょうかべつ"],["連続","れんぞく"],["理科","りか"],["社会","しゃかい"],["英語","えいご"],["中学","ちゅうがく"],["復習","ふくしゅう"],["直近","ちょっきん"],["合計","ごうけい"]];
+    ["買","か"],["送","おく"],["家","いえ"],["先","さき"],["日","ひ"],["書","か"],["伝","つた"],["使","つか"],["開","あ"],["移","うつ"],["板","ばん"],["中","ちゅう"],["学習","がくしゅう"],["問題数","もんだいすう"],["問題","もんだい"],["正答率","せいとうりつ"],["苦手","にがて"],["記録","きろく"],["単元","たんげん"],["教科別","きょうかべつ"],["連続","れんぞく"],["理科","りか"],["社会","しゃかい"],["英語","えいご"],["中学","ちゅうがく"],["復習","ふくしゅう"],["直近","ちょっきん"],["合計","ごうけい"],["記念日","きねんび"],["毎年","まいとし"],["誕生日","たんじょうび"],["祝日","しゅくじつ"],["運動会","うんどうかい"]];
   RUBY.sort((a,b)=>b[0].length-a[0].length);
   const RX=new RegExp(RUBY.map(r=>r[0]).join("|"),"g");
   const RMAP=Object.fromEntries(RUBY);
@@ -439,7 +466,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   ];
   const FIXED=[["警察","110"],["消防・救急","119"],["救急相談（東京）","#7119"]];
 
-  let S={items:[],events:[],messages:[],info:[],chores:[],rewards:[],points:[],balance:{}};
+  let S={items:[],events:[],messages:[],info:[],chores:[],rewards:[],points:[],balance:{},days:[]};
   let infoSec="home";
   let db=true, editing=false, selDay=TODAY;
   let me=BOOT.me;
@@ -458,7 +485,44 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   function when(ms){const d=new Date(ms);return (ymd(d)===TODAY?"今日":(d.getMonth()+1)+"/"+d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes());}
   function md(s){const [y,m,d]=s.split("-").map(Number);const dt=new Date(y,m-1,d);return m+"/"+d+"（"+WD[dt.getDay()]+"）";}
 
-  const t=new Date();$("today").textContent=t.getFullYear()+"年"+(t.getMonth()+1)+"月"+t.getDate()+"日（"+WD[t.getDay()]+"）";
+  /* 二十四節気（おおよその日付） */
+  const SEKKI=[[1,5,"小寒"],[1,20,"大寒"],[2,4,"立春"],[2,19,"雨水"],[3,5,"啓蟄"],[3,20,"春分"],[4,4,"清明"],[4,20,"穀雨"],[5,5,"立夏"],[5,21,"小満"],[6,5,"芒種"],[6,21,"夏至"],
+    [7,7,"小暑"],[7,22,"大暑"],[8,7,"立秋"],[8,23,"処暑"],[9,7,"白露"],[9,23,"秋分"],[10,8,"寒露"],[10,23,"霜降"],[11,7,"立冬"],[11,22,"小雪"],[12,7,"大雪"],[12,21,"冬至"]];
+  function sekki(d){const m=d.getMonth()+1,dd=d.getDate();let n="冬至";SEKKI.forEach(x=>{if(m>x[0]||(m===x[0]&&dd>=x[1]))n=x[2];});return n;}
+  /* 日本の祝日（法律のきまりから計算） */
+  function holidaysOf(y){
+    const L=[],add=(m,d,n)=>L.push([m,d,n]);
+    const nthMon=(m,k)=>{const f=new Date(y,m-1,1).getDay();return 1+((8-f)%7)+(k-1)*7;};
+    add(1,1,"元日");add(1,nthMon(1,2),"成人の日");add(2,11,"建国記念の日");add(2,23,"天皇誕生日");
+    add(3,Math.floor(20.8431+0.242194*(y-1980)-Math.floor((y-1980)/4)),"春分の日");
+    add(4,29,"昭和の日");add(5,3,"憲法記念日");add(5,4,"みどりの日");add(5,5,"こどもの日");
+    add(7,nthMon(7,3),"海の日");add(8,11,"山の日");add(9,nthMon(9,3),"敬老の日");
+    add(9,Math.floor(23.2488+0.242194*(y-1980)-Math.floor((y-1980)/4)),"秋分の日");
+    add(10,nthMon(10,2),"スポーツの日");add(11,3,"文化の日");add(11,23,"勤労感謝の日");
+    const key=(m,d)=>ymd(new Date(y,m-1,d));
+    const set=new Map(L.map(x=>[key(x[0],x[1]),x[2]]));
+    L.forEach(x=>{const d=new Date(y,x[0]-1,x[1]);if(d.getDay()===0){const s=new Date(d);do{s.setDate(s.getDate()+1);}while(set.has(ymd(s)));if(s.getFullYear()===y)set.set(ymd(s),"振替休日");}});
+    for(let m=1;m<=12;m++)for(let d=2;d<=30;d++){const c=new Date(y,m-1,d);if(c.getMonth()!==m-1)continue;const p=new Date(y,m-1,d-1),n=new Date(y,m-1,d+1);
+      if(!set.has(ymd(c))&&c.getDay()!==0&&set.has(ymd(p))&&set.has(ymd(n))&&set.get(ymd(p))!=="振替休日")set.set(ymd(c),"国民の休日");}
+    return [...set].map(([date,title])=>({id:"hol-"+date,title,date,yearly:false,holiday:true}));
+  }
+  function daysLeft(d){const p=TODAY.split("-").map(Number),base=Date.UTC(p[0],p[1]-1,p[2]);const q=d.date.split("-").map(Number);
+    let t=Date.UTC(d.yearly?p[0]:q[0],q[1]-1,q[2]);if(d.yearly&&t<base)t=Date.UTC(p[0]+1,q[1]-1,q[2]);return Math.round((t-base)/86400000);}
+  function daysSorted(withHol){
+    const y=Number(TODAY.slice(0,4));const hol=withHol?holidaysOf(y).concat(holidaysOf(y+1)):[];
+    return (S.days||[]).concat(hol).map(d=>Object.assign({},d,{left:daysLeft(d)})).filter(d=>d.left>=0&&d.left<=366).sort((a,b)=>a.left-b.left||(a.holiday?1:0)-(b.holiday?1:0));
+  }
+  function dayRow(d,canDel){
+    const r=el("div","drow");const n=el("div","dleft"+(d.left===0?" today":""));
+    if(d.left===0)n.appendChild(R("b",null,"今日"));else{n.appendChild(el("small",null,"あと"));n.appendChild(el("b",null,String(d.left)));n.appendChild(el("small",null,"日"));}
+    r.appendChild(n);
+    const t=el("div","t");t.appendChild(document.createTextNode(d.title));if(d.holiday)t.appendChild(R("span","hol","祝日"));
+    const nd=new Date();nd.setDate(nd.getDate()+d.left);t.appendChild(el("span","d",md(ymd(nd))+(d.yearly?" ・ 毎年":"")));r.appendChild(t);
+    if(canDel&&!d.holiday){const x=el("button","x","×");x.type="button";x.setAttribute("aria-label",d.title+"を削除");x.onclick=()=>del("days",d.id,d.title+"を削除しました");r.appendChild(x);}
+    return r;
+  }
+
+  const t=new Date();$("today").textContent=t.getFullYear()+"年"+(t.getMonth()+1)+"月"+t.getDate()+"日（"+WD[t.getDay()]+"）・"+sekki(t);
 
   let VIEW="home";function cur(){return VIEW;}
   function go(id){VIEW=id;editing=false;render();window.scrollTo(0,0);}
@@ -539,6 +603,9 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     v.insertAdjacentHTML("beforeend",DIV);
     {const bc=balCard();bc.classList.add("tap");bc.addEventListener("click",()=>go("study"));if(pendingN())bc.querySelector(".head").appendChild(el("span","tag","承認待ち "+pendingN()));v.appendChild(bc);}
 
+    {const soon=daysSorted(true).filter(d=>d.left<=45).slice(0,4);
+     if(soon.length){const cd=card("もうすぐ","Countdown");soon.forEach(d=>cd.appendChild(dayRow(d,false)));cd.classList.add("tap");cd.addEventListener("click",()=>go("plan"));v.appendChild(cd);}}
+
     const c1=card("今週の予定","This Week");
     c1.appendChild(R("p","hint","今日から"+md(WEEKEND)+"まで"));
     if(!week.length)c1.appendChild(R("p","empty","週末までの予定はありません。「予定」から追加できます"));
@@ -593,6 +660,22 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     const end=ymd(new Date(base.getFullYear(),base.getMonth(),base.getDate()+6));
     const later=sortedEvents().filter(e=>e.date>end);
     if(later.length){v.insertAdjacentHTML("beforeend",DIV);const c2=card("その先の予定","Later");later.slice(0,8).forEach(e=>c2.appendChild(evRow(e,true,true)));v.appendChild(c2);}
+    v.insertAdjacentHTML("beforeend",DIV);
+    const c3=card("記念日・カウントダウン","Anniversaries");
+    const mine=daysSorted(false);
+    if(!mine.length)c3.appendChild(R("p","empty","誕生日や記念日を登録すると、ホームにあと何日かが出ます"));
+    mine.forEach(d=>c3.appendChild(dayRow(d,true)));
+    const f3=el("form","form");
+    const t3=el("input","in");t3.id="dayTitle";t3.placeholder="名前（例: 運動会）";t3.maxLength=40;t3.setAttribute("aria-label","記念日の名前");
+    const r3=el("div","row");const d3=el("input","in");d3.id="dayDate";d3.type="date";d3.setAttribute("aria-label","日付");
+    const lb=el("label","yr");const cb=el("input");cb.type="checkbox";cb.id="dayYearly";lb.appendChild(cb);lb.appendChild(R("span",null,"毎年"));
+    r3.append(d3,lb);f3.append(t3,r3,btn("go","記念日を追加","plus","submit"));
+    f3.addEventListener("submit",e=>{e.preventDefault();const title=t3.value.trim();if(!title||!d3.value||!db)return;
+      const x={id:newId(),title:title,date:d3.value,yearly:cb.checked,at:Date.now()};t3.value="";d3.value="";cb.checked=false;
+      mutate(()=>{(S.days=S.days||[]).push(x);},"api_add",["days",x],"追加しました");});
+    c3.appendChild(f3);v.appendChild(c3);
+    const hol=daysSorted(true).filter(d=>d.holiday).slice(0,6);
+    if(hol.length){const c4=card("これからの祝日","Holidays");hol.forEach(d=>c4.appendChild(dayRow(d,false)));v.appendChild(c4);}
   }
 
   function vShop(v){
@@ -645,7 +728,8 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
 
   /* ---------- 学習 ---------- */
   let PROG=null,progAt=0,progLoading=false;
-  const SUBJ={rika:["理科","var(--leaf)"],shakai:["社会","var(--gold)"],eigo:["英語","var(--ai)"]};
+  const SUBJ={rika:["理科","var(--leaf)"],shakai:["社会","var(--gold)"],eigo:["英語","var(--ai)"],kana:["ひらがな","var(--ume)"],kazu:["かず","var(--ai)"],tokei:["とけい","var(--fuji)"]};
+  const KIDS_URL="kids.html";
   const pct=(c,n)=>n?Math.round(c/n*100):0;
   async function loadProg(){
     if(progLoading)return;progLoading=true;
@@ -665,7 +749,9 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     c.appendChild(el("p","hint","これまで合計 "+p.all.n+"問・正答率 "+pct(p.all.c,p.all.n)+"%"));
 
     c.appendChild(R("h3","sub-h","教科別の正答率(ここ1か月)"));
-    Object.keys(SUBJ).forEach(k=>{
+    const ks=Object.keys(SUBJ).filter(k=>(p.bySubj[k]||{}).n);
+    if(!ks.length)c.appendChild(R("p","empty","ここ1か月の記録はまだありません"));
+    ks.forEach(k=>{
       const b=p.bySubj[k]||{c:0,n:0};
       const r=el("div","sbar");r.appendChild(R("span","nm",SUBJ[k][0]));
       const tr=el("div","track");const fill=el("i");fill.style.width=pct(b.c,b.n)+"%";fill.style.background=SUBJ[k][1];tr.appendChild(fill);r.appendChild(tr);
@@ -673,7 +759,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
       c.appendChild(r);
     });
     const mc=p.missCount||{};
-    c.appendChild(el("p","misses","苦手リストに残っている問題:理科 "+(mc.rika||0)+"問・社会 "+(mc.shakai||0)+"問・英語 "+(mc.eigo||0)+"問"));
+    if((mc.rika||0)+(mc.shakai||0)+(mc.eigo||0))c.appendChild(el("p","misses","苦手リストに残っている問題:理科 "+(mc.rika||0)+"問・社会 "+(mc.shakai||0)+"問・英語 "+(mc.eigo||0)+"問"));
 
     if(p.weak&&p.weak.length){
       c.appendChild(R("h3","sub-h","つまずいている単元"));
@@ -799,10 +885,19 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   function vStudy(v){
     if(!PROG||Date.now()-progAt>60000)loadProg();
     vPoints(v);
-    const c0=card("一問一答ドリル","Study Drill");
-    c0.appendChild(R("p","hint","中学1年の理科・社会・英語。1問正解ごとに1ptもらえます"));
-    const a=el("a","go");a.href="study.html?k="+encodeURIComponent(BOOT.token);a.innerHTML=svg("study",2.2);a.appendChild(el("span",null,"ドリルをひらく"));
-    c0.appendChild(a);v.appendChild(c0);
+    if(me!=="mitsuha"){
+      const c0=card("一問一答ドリル","Study Drill");
+      c0.appendChild(R("p","hint","中学1年の理科・社会・英語。1問正解ごとに1ptもらえます"));
+      const a=el("a","go");a.href="study.html?k="+encodeURIComponent(BOOT.token);a.innerHTML=svg("study",2.2);a.appendChild(el("span",null,"ドリルをひらく"));
+      c0.appendChild(a);v.appendChild(c0);
+    }
+    if(me!=="koume"){
+      const ck=card("わくわくドリル","Kids Drill");
+      ck.appendChild(R("p","hint","ひらがな・カタカナ・かず・とけい。読み上げつきで、1問正解ごとに1ptもらえます"));
+      const a2=el("a","go");a2.href=KIDS_URL+"?k="+encodeURIComponent(BOOT.token);a2.target="_top";a2.innerHTML=svg("star",2.2);a2.appendChild(el("span",null,"わくわくドリルをひらく"));
+      ck.appendChild(a2);v.appendChild(ck);
+    }
+    if(isParent())v.appendChild(R("p","note","パパ・ママが試しに解くと、パパ・ママの記録として残ります"));
     v.insertAdjacentHTML("beforeend",DIV);
     if(!PROG){v.appendChild(R("p","empty","学習の記録を読み込み中…"));return;}
     if(PROG.error){v.appendChild(el("p","empty",PROG.error));return;}
