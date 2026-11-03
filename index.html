@@ -239,6 +239,7 @@ a.go{text-decoration:none}
 .pb{border:1px solid var(--gold-soft);border-radius:12px;background:var(--bg);padding:10px 12px;display:flex;align-items:center;gap:12px;min-width:0}
 .pb .ava{width:36px;height:36px;font-size:14px}
 .pb b{display:block;font-family:var(--latin);font-weight:600;font-size:32px;line-height:1;font-variant-numeric:tabular-nums}
+.pb b .u{font-size:13px;margin-left:3px;letter-spacing:.04em}
 .pb small{display:block;font-size:11px;color:var(--muted);font-weight:700;line-height:1.8}
 .prow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px dashed var(--hair)}
 .prow .t{flex:1;min-width:0;font-weight:500;overflow-wrap:anywhere}
@@ -248,6 +249,8 @@ a.go{text-decoration:none}
 .wait.ng{color:var(--muted);border-color:var(--hair)}
 .prow .bought:disabled{opacity:.4;cursor:default}
 .card.tap{cursor:pointer}
+.prow .t .who{margin-left:6px;font-size:11px;padding:0 8px;vertical-align:1px}
+.tgt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-weight:700}
 
 </style>
 
@@ -696,14 +699,17 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   const earners=()=>MEMBERS.filter(m=>m.id!=="all"&&(!PARENTS.includes(m.id)||bal(m.id).total||bal(m.id).week));
   const pendingN=()=>isParent()?(S.points||[]).filter(p=>p.status==="pending").length:0;
   const ptText=p=>p.pt>0?"+"+p.pt:String(p.pt);
+  const forMe=it=>!it.for||String(it.for).split(",").includes(me);
+  const KIDS=()=>MEMBERS.filter(m=>m.id!=="all"&&!PARENTS.includes(m.id));
+  const tgtRank=it=>{if(!it.for)return 99;const i=MEMBERS.findIndex(m=>m.id===String(it.for).split(",")[0]);return i<0?98:i;};
   function balCard(){
     const c=card("がんばりポイント","Points");
     const g=el("div","pbal");
     earners().forEach(m=>{
       const b=bal(m.id);const x=el("div","pb");
       const a=el("span","ava",m.ini);a.style.background=m.color;if(m.sym)a.insertAdjacentHTML("beforeend",use(m.sym,null,20));x.appendChild(a);
-      const w=el("div");w.appendChild(el("b","foil",String(avail(m.id))));
-      w.appendChild(el("small",null,m.name+" のポイント"));
+      const w=el("div");const bb=el("b","foil",String(avail(m.id)));bb.appendChild(el("span","u","pt"));w.appendChild(bb);
+      w.appendChild(el("small",null,m.name));
       if(b.week)w.appendChild(el("small",null,"この7日 +"+b.week));
       if(b.held)w.appendChild(el("small",null,"交換待ち "+b.held+"pt"));
       x.appendChild(w);g.appendChild(x);
@@ -714,9 +720,14 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     const f=el("form","form");const r=el("div","row");
     const n=el("input","in");n.placeholder=ph;n.maxLength=30;n.setAttribute("aria-label",ph);
     const p=el("input","in");p.type="number";p.min="1";p.max="1000";p.inputMode="numeric";p.placeholder="pt";p.style.maxWidth="88px";p.setAttribute("aria-label","ポイント");
-    r.append(n,p,btn("go","追加","plus","submit"));f.appendChild(r);
+    n.style.width="100%";r.append(p,btn("go","追加","plus","submit"));
+    let tgt="";const tw=el("div","tgt");
+    const drawT=()=>{tw.textContent="";tw.appendChild(R("span",null,"だれの？"));const pk=el("div","pick");
+      [{id:"",name:"みんな",color:"var(--gold)"}].concat(KIDS()).forEach(m=>{const b=el("button",null,m.name);b.type="button";const on=m.id===tgt;b.setAttribute("aria-pressed",on);if(on)b.style.background=m.color;b.onclick=()=>{tgt=m.id;drawT();};pk.appendChild(b);});
+      tw.appendChild(pk);};drawT();
+    f.append(tw,n,r);
     f.addEventListener("submit",e=>{e.preventDefault();const name=n.value.trim(),pt=Math.floor(Number(p.value)||0);if(!name||pt<1||!db)return;
-      const order=(S[kind]||[]).reduce((m,i)=>Math.max(m,i.order||0),0)+1;const x={id:newId(),name:name,pt:pt,order:order};n.value="";p.value="";
+      const order=(S[kind]||[]).reduce((m,i)=>Math.max(m,i.order||0),0)+1;const x={id:newId(),name:name,pt:pt,order:order,for:tgt};n.value="";p.value="";
       mutate(()=>{(S[kind]=S[kind]||[]).push(x);},"api_add",[kind,x],"追加しました");});
     return f;
   }
@@ -733,13 +744,15 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     const reward=kind==="rewards";
     const c=card(jp,en,isParent()?editBtn():null);if(editing)c.classList.add("editing");
     const my=avail(me);
-    if(isParent())c.appendChild(R("p","hint",editing?"×で削除、下の欄で追加できます":(reward?"子どもが交換を申請すると承認待ちに入ります":"子どもが「やった」を押すと承認待ちに入ります")));
+    if(isParent())c.appendChild(R("p","hint",editing?"×で削除。下の欄で、だれ向けかを選んで追加できます":(reward?"子どもが交換を申請すると承認待ちに入ります":"子どもが「やった」を押すと承認待ちに入ります")));
     else c.appendChild(R("p","hint",reward?"今つかえるのは "+my+"pt。交換はパパかママの承認のあとで差し引かれます":"やったら「やった」を押してね。パパかママが承認するとポイントが入ります"));
-    const list=(S[kind]||[]).slice().sort((a,b)=>(a.order||0)-(b.order||0));
+    const list=(S[kind]||[]).filter(it=>isParent()||forMe(it)).slice().sort((a,b)=>(isParent()?tgtRank(a)-tgtRank(b):0)||(a.order||0)-(b.order||0));
     if(!list.length)c.appendChild(R("p","empty","まだ登録がありません"));
     const mine=(S.points||[]).filter(p=>p.who===me&&p.status==="pending"&&p.kind===(reward?"reward":"chore"));
     list.forEach(it=>{
-      const r=el("div","prow");r.appendChild(el("div","t",it.name));r.appendChild(el("span","ptv"+(reward?" minus":""),(reward?"":"+")+it.pt+"pt"));
+      const r=el("div","prow");const tt=el("div","t",it.name);
+      if(isParent())(it.for?String(it.for).split(","):["all"]).forEach(id=>tt.appendChild(whoPill(id)));
+      r.appendChild(tt);r.appendChild(el("span","ptv"+(reward?" minus":""),(reward?"":"+")+it.pt+"pt"));
       if(editing){const x=el("button","x","×");x.type="button";x.setAttribute("aria-label",it.name+"を削除");x.onclick=()=>del(kind,it.id,it.name+"を削除しました");r.appendChild(x);}
       else if(!isParent()){
         if(mine.some(p=>p.label===it.name))r.appendChild(R("span","wait","承認待ち"));
