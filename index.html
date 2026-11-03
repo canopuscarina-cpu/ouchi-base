@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#6e2346">
+<title>おうちベース</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap">
+<style>
+/* Layout: 梅と三つ葉 botanical console. Wine header with an illustrated plum branch and drifting petals/trefoils,
+   komon ground of tiny ume + mitsuba, gold-lined cards dressed with blossom clusters and trefoil sprigs, fixed tab bar. */
+:root{
+  --bg:#fbf1f4; --paper:#fffcfd; --ink:#3b1830; --muted:#7c6372; --hair:#efd9e1;
+  --wine:#6e2346; --wine2:#93365f; --wine-ink:#fff4f7;
+  --gold:#b88a3e; --gold-hi:#f2d99a; --gold-lo:#8a6426; --gold-soft:#ecdcb6;
+  --ume:#e2577f; --ume-hi:#ffc1d2; --ume-lo:#b8325d; --bark:#5a3826;
+  --leaf:#4f9d55; --leaf-hi:#9fd88f; --leaf-lo:#2f7139;
+  --ai:#3f6fc6; --fuji:#8a64c4;
+  --display:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans",system-ui,sans-serif;
+  --latin:"Cormorant Garamond",Georgia,serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1b0d17; --paper:#28131f; --ink:#fbeef3; --muted:#c3a6b6; --hair:#43233a;
+  --wine:#3a0f26; --wine2:#5e1c3e; --wine-ink:#fff4f7;
+  --gold:#ddb76b; --gold-hi:#fbe6b0; --gold-lo:#a47b36; --gold-soft:#5c4528;
+  --ume:#f27a9d; --ume-hi:#ffd0dd; --ume-lo:#c94770; --bark:#8a6247;
+  --leaf:#72c27a; --leaf-hi:#b6e8a8; --leaf-lo:#3f8a48;
+  --ai:#7aa2ff; --fuji:#b293ec; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1b0d17; --paper:#28131f; --ink:#fbeef3; --muted:#c3a6b6; --hair:#43233a;
+  --wine:#3a0f26; --wine2:#5e1c3e; --wine-ink:#fff4f7;
+  --gold:#ddb76b; --gold-hi:#fbe6b0; --gold-lo:#a47b36; --gold-soft:#5c4528;
+  --ume:#f27a9d; --ume-hi:#ffd0dd; --ume-lo:#c94770; --bark:#8a6247;
+  --leaf:#72c27a; --leaf-hi:#b6e8a8; --leaf-lo:#3f8a48;
+  --ai:#7aa2ff; --fuji:#b293ec; color-scheme:dark}
+html,body{height:100%}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.7}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+ruby rt{font-size:.5em;font-weight:500;letter-spacing:0;opacity:.85}
+.foil{background:linear-gradient(100deg,var(--gold-lo) 0%,var(--gold) 22%,var(--gold-hi) 38%,var(--gold) 52%,var(--gold-lo) 70%,var(--gold) 86%,var(--gold-hi) 100%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.foil ruby rt{color:var(--gold)}
+.sym{display:block}
+
+/* komon ground */
+.ground{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;opacity:.5}
+
+/* header */
+.band{position:relative;overflow:hidden;background:radial-gradient(120% 140% at 85% 20%,var(--wine2),var(--wine) 60%);color:var(--wine-ink)}
+.band .branch{position:absolute;right:-10px;top:0;height:100%;width:min(78%,440px)}
+.band canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.band-rule{height:10px;background:
+  linear-gradient(var(--gold),var(--gold)) 0 1px/100% 1.5px no-repeat,
+  linear-gradient(var(--gold-lo),var(--gold-lo)) 0 6px/100% .8px no-repeat,var(--wine)}
+.band-in{position:relative;max-width:600px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px));padding-block:28px 34px;display:flex;align-items:center;gap:16px}
+.emblem{position:relative;width:76px;height:76px;flex:none;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--paper),var(--bg));display:grid;place-items:center;
+  box-shadow:0 0 0 1.5px var(--gold),0 0 0 5px var(--wine),0 0 0 6px var(--gold-hi),0 0 0 7.5px var(--gold-lo),0 6px 22px rgba(0,0,0,.3)}
+.emblem svg{width:56px;height:56px}
+.eyebrow{font-family:var(--latin);font-style:italic;font-weight:600;font-size:16px;letter-spacing:.2em;color:var(--gold-hi);display:flex;align-items:center;gap:8px}
+.eyebrow svg{width:14px;height:14px}
+.band::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,var(--wine) 0%,color-mix(in srgb,var(--wine) 85%,transparent) 42%,transparent 72%)}
+.band-in{z-index:1;color:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.band-in:active .emblem{transform:scale(.96)}
+.band-in:focus-visible{outline:2px solid var(--gold-hi);outline-offset:-6px}
+.band h1{font-family:var(--display);font-weight:800;font-size:34px;line-height:1.15;margin:2px 0 0;letter-spacing:.1em;
+  color:#fff7e4;background:linear-gradient(100deg,#fff7e4 0%,#fff7e4 35%,#ffe7a8 50%,#fff7e4 65%,#fff7e4 100%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 1px 0 var(--gold-lo)) drop-shadow(0 3px 8px rgba(30,0,15,.55))}
+.band p{margin:4px 0 0;font-size:13px;letter-spacing:.06em;color:#fff7e4;text-shadow:0 1px 4px rgba(30,0,15,.6)}
+.eyebrow{text-shadow:0 1px 4px rgba(30,0,15,.6)}
+@media (prefers-reduced-motion: no-preference){.band h1{animation:shine 7s ease-in-out infinite}}
+@keyframes shine{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+
+.wrap{max-width:600px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 124px;display:flex;flex-direction:column;gap:22px}
+.status{font-size:12px;color:var(--muted);letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+.status svg{width:14px;height:14px}
+
+/* card */
+.card{position:relative;border:1.5px solid transparent;border-radius:14px;padding:28px 20px 22px;
+  background:linear-gradient(var(--paper),var(--paper)) padding-box,
+             linear-gradient(135deg,var(--gold-hi),var(--gold) 30%,var(--gold-lo) 50%,var(--gold) 70%,var(--gold-hi)) border-box;
+  box-shadow:0 16px 32px -20px rgba(110,35,70,.55)}
+.card::before{content:"";position:absolute;inset:5px;border:1px solid var(--gold-soft);border-radius:10px;pointer-events:none}
+.deco{position:absolute;pointer-events:none}
+.deco.tl{top:-18px;left:-14px;width:78px;height:62px}
+.deco.br{bottom:-14px;right:-10px;width:56px;height:52px}
+.crest{position:absolute;top:-15px;left:50%;margin-left:-15px;width:30px;height:30px;border-radius:50%;background:var(--paper);box-shadow:0 0 0 1.5px var(--gold),0 0 0 4px var(--paper),0 0 0 5px var(--gold-soft)}
+.crest svg{width:30px;height:30px}
+.head{display:flex;align-items:flex-end;gap:10px;margin-bottom:14px;padding-bottom:12px;position:relative;padding-left:44px}
+.head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold) 15%,var(--gold) 85%,transparent)}
+.head .ttl{display:flex;flex-direction:column;min-width:0}
+.head .en{font-family:var(--latin);font-style:italic;font-size:15px;letter-spacing:.16em;color:var(--gold);line-height:1}
+.head h2{font-family:var(--display);font-weight:800;font-size:21px;margin:4px 0 0;letter-spacing:.06em;line-height:1.5}
+.head .tag{font-size:12px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--ume-hi),var(--ume) 50%,var(--ume-lo));border-radius:999px;padding:1px 10px;margin-bottom:6px;font-variant-numeric:tabular-nums;box-shadow:0 0 0 1px var(--gold)}
+.tool{margin-left:auto;margin-bottom:4px;display:inline-flex;align-items:center;gap:4px;background:var(--paper);border:1px solid var(--gold);color:var(--gold-lo);border-radius:999px;padding:2px 12px;font-size:12px;font-weight:700;letter-spacing:.06em}
+:root[data-theme="dark"] .tool{color:var(--gold)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tool{color:var(--gold)}}
+.tool svg,.go svg,.bought svg{width:15px;height:15px;flex:none}
+.empty{color:var(--muted);font-size:14px;padding:4px 0}
+.hint{font-size:12px;color:var(--muted);margin:0 0 12px;letter-spacing:.03em;line-height:2}
+
+/* divider: blossom garland */
+.divider{display:flex;align-items:center;gap:8px}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.divider::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.divider svg{width:92px;height:26px}
+
+/* tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tile{position:relative;overflow:hidden;text-align:left;border:1.5px solid transparent;border-radius:14px;padding:14px 16px 12px;display:flex;flex-direction:column;
+  background:linear-gradient(160deg,var(--paper) 55%,var(--tbg)) padding-box,linear-gradient(135deg,var(--gold-hi),var(--gold-lo),var(--gold-hi)) border-box;
+  box-shadow:0 12px 24px -18px rgba(110,35,70,.6)}
+.tile .en{font-family:var(--latin);font-style:italic;font-size:14px;letter-spacing:.14em;color:var(--gold)}
+.tile b{font-family:var(--latin);font-weight:600;font-size:50px;line-height:1;font-variant-numeric:tabular-nums}
+.toprow{display:flex;align-items:flex-start;gap:10px;padding-left:44px;margin-bottom:12px}
+.toprow .hint{flex:1;min-width:0;margin:0}
+.toprow .tool{margin:2px 0 0}
+.tile span.sub{position:relative;font-size:12px;font-weight:700;color:var(--muted);line-height:2;margin:6px 0 4px;min-height:38px;display:flex;align-items:center}
+.tile span.jp{font-size:13px;font-weight:700;letter-spacing:.06em;line-height:2;position:relative}
+.tile .mark{position:absolute;right:-12px;bottom:-14px;width:84px;height:84px}
+.tile:active{transform:translateY(1px)}
+
+/* week */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px}
+.day{position:relative;background:var(--paper);border:1px solid var(--hair);border-radius:10px;padding:6px 0 8px;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0}
+.day small{font-size:11px;color:var(--muted);line-height:1.8}
+.day strong{font-family:var(--latin);font-weight:600;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.day .flag{width:12px;height:12px;opacity:0}
+.day.has .flag{opacity:1}
+.day.sel{background:radial-gradient(120% 120% at 70% 0%,var(--wine2),var(--wine));border-color:var(--gold);color:var(--wine-ink);box-shadow:inset 0 0 0 1px var(--gold-hi)}
+.day.sel small{color:var(--gold-hi)}
+.day.sun small{color:var(--ume)} .day.sat small{color:var(--ai)}
+.ev{display:flex;gap:12px;align-items:center;padding:11px 0;border-top:1px dashed var(--hair)}
+.ev:first-child{border-top:0}
+.ev time{font-family:var(--latin);font-weight:600;font-size:18px;min-width:48px;font-variant-numeric:tabular-nums;color:var(--gold)}
+.ev .t{flex:1;min-width:0;font-weight:500}
+.ev .d{font-size:12px;color:var(--muted);display:block}
+.who{font-size:12px;font-weight:700;border-radius:999px;padding:1px 10px;color:#fff;white-space:nowrap;box-shadow:0 0 0 1px var(--gold-soft)}
+.x{background:none;border:1px solid var(--hair);border-radius:50%;width:28px;height:28px;color:var(--muted);line-height:1;flex:none}
+
+/* forms */
+.form{display:flex;flex-direction:column;gap:10px;margin-top:16px;padding-top:16px;border-top:1px dashed var(--gold-soft)}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row>*{min-width:0}
+.in{flex:1;border:1px solid var(--hair);border-bottom:1.5px solid var(--gold);border-radius:8px;padding:10px 12px;background:var(--bg);font-size:16px}
+.go{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:999px;padding:8px 20px;background:radial-gradient(120% 140% at 30% 0%,var(--wine2),var(--wine));color:var(--gold-hi);font-weight:700;letter-spacing:.08em;box-shadow:inset 0 0 0 1px var(--gold),inset 0 0 0 3px var(--wine),inset 0 0 0 4px var(--gold-lo);line-height:1.6}
+.pick{display:flex;gap:6px;flex-wrap:wrap}
+.pick button{border:1px solid var(--hair);border-radius:999px;padding:3px 13px;background:var(--paper);font-size:13px;font-weight:700}
+.pick button[aria-pressed="true"]{color:#fff;border-color:var(--gold)}
+
+/* shopping */
+.buyrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px dashed var(--hair)}
+.buyrow:first-child{border-top:0}
+.buyrow .n{flex:1;font-weight:700;font-size:16px;min-width:0;display:flex;align-items:center;gap:10px}
+.buyrow .n svg{width:20px;height:20px;flex:none}
+.buyrow .w{font-size:12px;color:var(--muted)}
+.bought{display:inline-flex;align-items:center;gap:4px;border:0;border-radius:999px;background:linear-gradient(160deg,var(--leaf-hi),var(--leaf) 45%,var(--leaf-lo));color:#fff;font-weight:700;padding:5px 14px;letter-spacing:.06em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.45),0 0 0 1px var(--gold-soft);line-height:1.6}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative;border:1px solid var(--hair);border-radius:999px;background:var(--paper);padding:7px 15px;font-weight:500;transition:transform .08s}
+.chip:active{transform:scale(.96)}
+.chip.out{background:linear-gradient(150deg,var(--ume-hi),var(--ume) 50%,var(--ume-lo));border-color:var(--gold);color:#fff;font-weight:700;padding-left:30px}
+.chip.out::before{content:"";position:absolute;left:9px;top:50%;width:16px;height:16px;margin-top:-8px;background:var(--ume-pin) center/contain no-repeat}
+.chip .del{display:none}
+.editing .chip .del{display:grid;place-items:center;position:absolute;top:-9px;right:-9px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--paper);font-size:12px}
+
+/* board */
+.msg{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-top:1px dashed var(--hair)}
+.msg:first-child{border-top:0}
+.ava{position:relative;width:40px;height:40px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:15px;color:#fff;box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--gold)}
+.ava svg{position:absolute;right:-8px;bottom:-6px;width:20px;height:20px}
+.msg .body{flex:1;min-width:0}
+.msg .meta{font-size:12px;color:var(--muted)}
+.msg .text{position:relative;background:var(--bg);border:1px solid var(--gold-soft);border-radius:4px 16px 16px 16px;padding:8px 12px;margin-top:3px;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.6}
+
+/* info records */
+.sec-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.sec-tabs button{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--gold-soft);border-radius:999px;padding:3px 12px 3px 6px;background:var(--paper);font-size:13px;font-weight:700;line-height:2}
+.sec-tabs button svg{width:18px;height:18px}
+.sec-tabs button[aria-pressed="true"]{background:radial-gradient(120% 140% at 30% 0%,var(--wine2),var(--wine));color:var(--gold-hi);border-color:var(--gold)}
+.rec{position:relative;border:1px solid var(--gold-soft);border-radius:12px;background:var(--bg);padding:12px 14px 12px 40px;display:flex;flex-direction:column;gap:2px}
+.rec+.rec{margin-top:10px}
+.rec>svg.leafmark{position:absolute;left:10px;top:13px;width:22px;height:22px}
+.rec b{font-weight:700;overflow-wrap:anywhere}
+.rec .val{white-space:pre-wrap;overflow-wrap:anywhere;user-select:text;-webkit-user-select:text;font-variant-numeric:tabular-nums}
+.rec .acts{display:flex;gap:6px;margin-top:4px}
+.copy{display:inline-flex;align-items:center;gap:4px;background:var(--paper);border:1px solid var(--gold);color:var(--gold-lo);border-radius:999px;padding:0 10px;font-size:12px;font-weight:700;line-height:2}
+.copy svg{width:13px;height:13px}
+.rec .x{position:absolute;top:-10px;right:-10px;background:var(--paper);width:26px;height:26px;display:none}
+.editing .rec .x{display:block}
+.rec.fixed{background:color-mix(in srgb,var(--ume) 8%,var(--paper))}
+.rec.fixed .big{font-family:var(--latin);font-weight:600;font-size:24px;line-height:1.2;color:var(--ume-lo)}
+textarea.in{min-height:84px;resize:vertical;line-height:1.6}
+.note{font-size:12px;color:var(--muted);margin:12px 0 0;line-height:1.9}
+
+/* tab bar */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:radial-gradient(140% 200% at 50% 0%,var(--wine2),var(--wine));padding-top:8px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px));
+  box-shadow:0 -1.5px 0 var(--gold),0 -4px 0 var(--wine),0 -5px 0 var(--gold-lo)}
+.tabs nav{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(6,1fr);gap:2px}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:0;padding:2px 0;font-size:11px;font-weight:700;letter-spacing:.04em;color:rgba(255,244,247,.65);position:relative;line-height:1.5}
+.tab>svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--gold-hi)}
+.tab .cur{position:absolute;top:-22px;left:50%;width:22px;height:22px;margin-left:-11px;display:none;filter:drop-shadow(0 0 4px rgba(242,217,154,.7))}
+.tab[aria-current="page"] .cur{display:block}
+.tab .dot{position:absolute;top:0;right:calc(50% - 22px);min-width:17px;height:17px;border-radius:9px;background:var(--ume);color:#fff;font-size:10px;display:grid;place-items:center;padding:0 4px;box-shadow:0 0 0 1px var(--gold)}
+
+.toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--wine);color:var(--gold-hi);border:1px solid var(--gold);padding:8px 18px;border-radius:999px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;z-index:6}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){.chip,.toast{transition:none}}
+/* study */
+a.go{text-decoration:none}
+.study-open{display:flex}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.stat{border:1px solid var(--gold-soft);border-radius:12px;background:var(--bg);padding:10px 6px 8px;text-align:center;display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font-family:var(--latin);font-weight:600;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;color:var(--muted);font-weight:700;line-height:1.9}
+.sub-h{font-family:var(--display);font-weight:800;font-size:15px;margin:18px 0 4px;letter-spacing:.04em}
+.sbar{display:grid;grid-template-columns:3.2em 1fr auto;align-items:center;gap:10px;padding:5px 0}
+.sbar .nm{font-weight:700;font-size:13px}
+.track{height:10px;border-radius:99px;background:var(--hair);overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px}
+.sbar .v{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;min-width:6.5em;text-align:right}
+.wk{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed var(--hair)}
+.wk .t{flex:1;min-width:0;font-weight:500;font-size:14px;overflow-wrap:anywhere}
+.wk .p{font-family:var(--latin);font-weight:600;font-size:19px;color:var(--ume-lo);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lg{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed var(--hair);font-size:14px}
+.lg time{font-size:12px;color:var(--muted);min-width:64px;font-variant-numeric:tabular-nums}
+.lg .t{flex:1;min-width:0;overflow-wrap:anywhere}
+.lg .s{font-family:var(--latin);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sp{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:0 8px;color:#fff;margin-right:6px;line-height:1.8;vertical-align:1px}
+.misses{font-size:13px;color:var(--muted);margin:10px 0 0}
+
+</style>
+
+</head>
+<body>
+<!-- shared motifs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="g-ume" cx="50%" cy="30%" r="75%"><stop offset="0" stop-color="var(--ume-hi)"/><stop offset=".55" stop-color="var(--ume)"/><stop offset="1" stop-color="var(--ume-lo)"/></radialGradient>
+    <radialGradient id="g-umec" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="var(--ume-lo)"/><stop offset="1" stop-color="var(--ume)"/></radialGradient>
+    <linearGradient id="g-leaf" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="var(--leaf-lo)"/><stop offset=".6" stop-color="var(--leaf)"/><stop offset="1" stop-color="var(--leaf-hi)"/></linearGradient>
+    <symbol id="petal" viewBox="-10 -10 20 20"><path d="M0 9C-7 6-9-2-6-7c2-2 4-2 6 1 2-3 4-3 6-1 3 5 1 13-6 16z" fill="url(#g-ume)"/></symbol>
+    <symbol id="ume" viewBox="-24 -24 48 48">
+      <g stroke="var(--ume-lo)" stroke-width=".5">
+        <use href="#petal" x="-10" y="-21" width="20" height="20" transform="rotate(0)"/>
+        <use href="#petal" x="-10" y="-21" width="20" height="20" transform="rotate(72)"/>
+        <use href="#petal" x="-10" y="-21" width="20" height="20" transform="rotate(144)"/>
+        <use href="#petal" x="-10" y="-21" width="20" height="20" transform="rotate(216)"/>
+        <use href="#petal" x="-10" y="-21" width="20" height="20" transform="rotate(288)"/>
+      </g>
+      <circle r="5" fill="url(#g-umec)"/>
+      <g stroke="var(--gold)" stroke-width=".9" stroke-linecap="round">
+        <path d="M0 0 0-9M0 0 6.4-6.4M0 0 9 0M0 0 6.4 6.4M0 0 0 9M0 0-6.4 6.4M0 0-9 0M0 0-6.4-6.4M0 0 3.4-8.3M0 0-3.4 8.3"/>
+      </g>
+      <g fill="var(--gold-hi)" stroke="var(--gold-lo)" stroke-width=".4">
+        <circle cy="-9" r="1.3"/><circle cx="6.4" cy="-6.4" r="1.3"/><circle cx="9" r="1.3"/><circle cx="6.4" cy="6.4" r="1.3"/><circle cy="9" r="1.3"/><circle cx="-6.4" cy="6.4" r="1.3"/><circle cx="-9" r="1.3"/><circle cx="-6.4" cy="-6.4" r="1.3"/>
+      </g>
+    </symbol>
+    <symbol id="bud" viewBox="-12 -12 24 24">
+      <path d="M0-9C6-9 8-1 4 4 2 7-2 7-4 4-8-1-6-9 0-9z" fill="url(#g-ume)" stroke="var(--ume-lo)" stroke-width=".5"/>
+      <path d="M-4 4C-2 9 2 9 4 4" fill="var(--leaf-lo)"/>
+    </symbol>
+    <symbol id="leaflet" viewBox="-12 -24 24 26">
+      <path d="M0 0C-9-3-12-14-7-19-4-22-1-20 0-17 1-20 4-22 7-19 12-14 9-3 0 0z" fill="url(#g-leaf)" stroke="var(--leaf-lo)" stroke-width=".6"/>
+      <path d="M0-1V-16M0-6-4-11M0-6 4-11M0-11-3-15M0-11 3-15" stroke="var(--leaf-hi)" stroke-width=".7" fill="none" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="mitsuba" viewBox="-24 -24 48 48">
+      <path d="M0 2C1 10 3 16 7 22" stroke="var(--leaf-lo)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <use href="#leaflet" x="-12" y="-24" width="24" height="26" transform="rotate(0)"/>
+      <use href="#leaflet" x="-12" y="-24" width="24" height="26" transform="rotate(118)"/>
+      <use href="#leaflet" x="-12" y="-24" width="24" height="26" transform="rotate(-118)"/>
+      <circle r="2" fill="var(--gold)"/>
+    </symbol>
+    <pattern id="komon" width="96" height="96" patternUnits="userSpaceOnUse">
+      <g opacity=".22">
+        <use href="#ume" x="10" y="10" width="20" height="20"/>
+        <use href="#mitsuba" x="58" y="54" width="22" height="22" transform="rotate(20 69 65)"/>
+        <use href="#bud" x="64" y="12" width="9" height="9"/>
+        <use href="#petal" x="22" y="64" width="9" height="9" transform="rotate(-30 26 68)"/>
+      </g>
+    </pattern>
+  </defs>
+</svg>
+
+<svg class="ground" aria-hidden="true"><rect width="100%" height="100%" fill="url(#komon)"/></svg>
+
+<header>
+  <div class="band">
+    <svg class="branch" viewBox="0 0 440 170" preserveAspectRatio="xMaxYMid slice" aria-hidden="true">
+      <g fill="none" stroke="var(--bark)" stroke-linecap="round">
+        <path d="M450 18C390 30 352 60 312 74 270 88 236 82 200 104 176 118 160 140 150 168" stroke-width="7"/>
+        <path d="M312 74C300 50 286 38 262 30" stroke-width="3.5"/>
+        <path d="M236 90C222 74 214 64 198 58" stroke-width="2.6"/>
+        <path d="M200 104C186 100 170 104 156 112" stroke-width="2.4"/>
+        <path d="M380 40C372 26 372 14 378 4" stroke-width="2.6"/>
+        <path d="M262 30 250 22" stroke-width="2"/>
+      </g>
+      <g opacity=".95">
+        <use href="#ume" x="248" y="10" width="40" height="40"/>
+        <use href="#ume" x="300" y="52" width="46" height="46"/>
+        <use href="#ume" x="196" y="78" width="38" height="38"/>
+        <use href="#ume" x="356" y="0" width="34" height="34"/>
+        <use href="#ume" x="140" y="96" width="30" height="30"/>
+        <use href="#ume" x="404" y="20" width="30" height="30"/>
+        <use href="#bud" x="188" y="46" width="16" height="16"/>
+        <use href="#bud" x="238" y="14" width="13" height="13"/>
+        <use href="#bud" x="274" y="70" width="14" height="14"/>
+        <use href="#bud" x="372" y="58" width="12" height="12"/>
+        <use href="#mitsuba" x="150" y="128" width="40" height="40" transform="rotate(-15 170 148)"/>
+        <use href="#mitsuba" x="340" y="104" width="34" height="34" transform="rotate(25 357 121)"/>
+      </g>
+    </svg>
+    <canvas id="petals" aria-hidden="true"></canvas>
+    <a class="band-in" href="#home" id="brand" aria-label="ホームに戻る">
+      <div class="emblem" aria-hidden="true">
+        <svg viewBox="0 0 56 56">
+          <use href="#mitsuba" x="16" y="16" width="38" height="38" transform="rotate(30 35 35)"/>
+          <use href="#ume" x="2" y="2" width="36" height="36"/>
+        </svg>
+      </div>
+      <div>
+        <div class="eyebrow"><svg viewBox="0 0 14 14"><use href="#ume" width="14" height="14"/></svg>Family Base<svg viewBox="0 0 14 14"><use href="#mitsuba" width="14" height="14"/></svg></div>
+        <h1>おうちベース</h1>
+        <p id="today"></p>
+      </div>
+    </a>
+  </div>
+  <div class="band-rule"></div>
+</header>
+
+<div class="wrap" id="app">
+  <div class="status" id="status"><svg viewBox="0 0 14 14"><use href="#mitsuba" width="14" height="14"/></svg><span>読み込み中…</span></div>
+  <main id="view"></main>
+</div>
+
+<div class="tabs"><nav id="tabs" aria-label="メニュー"></nav></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  const KEY=(new URLSearchParams(location.search).get("k")||"").trim();
+  const API="https://script.google.com/macros/s/AKfycby1r1W0vTnkbKJLNlEog6C-kwbMdLcn56dahj6qhBcey8BEuHWdkDMWGsM0o0rp5om3/exec";
+function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credentials:"omit",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({k:KEY,fn:fn,args:args||[]})},opt||{})).then(r=>{if(!r.ok)throw new Error("通信できませんでした");return r.json();}).then(j=>{if(!j.ok)throw new Error(j.error||"保存できませんでした");return j.data;});}
+  let BOOT={token:KEY,me:null,data:null};
+  const $=id=>document.getElementById(id);
+  const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
+
+  /* ruby: only for fixed UI strings, never for user content */
+  const RUBY=[["家族","かぞく"],["予定","よてい"],["伝言","でんごん"],["今日","きょう"],["今週","こんしゅう"],["週末","しゅうまつ"],["追加","ついか"],["編集","へんしゅう"],["完了","かんりょう"],
+    ["最近","さいきん"],["名前","なまえ"],["品目","ひんもく"],["予備","よび"],["全部","ぜんぶ"],["削除","さくじょ"],["学校","がっこう"],["病院","びょういん"],
+    ["最初","さいしょ"],["登録","とうろく"],["保存","ほぞん"],["補充","ほじゅう"],["小学校","しょうがっこう"],["お知","おし"],["共有","きょうゆう"],
+    ["情報","じょうほう"],["住所","じゅうしょ"],["緊急","きんきゅう"],["連絡先","れんらくさき"],["実家","じっか"],["家系図","かけいず"],["内容","ないよう"],
+    ["項目","こうもく"],["警察","けいさつ"],["消防","しょうぼう"],["救急","きゅうきゅう"],["相談","そうだん"],["番号","ばんごう"],["電話","でんわ"],
+    ["買","か"],["送","おく"],["家","いえ"],["先","さき"],["日","ひ"],["書","か"],["伝","つた"],["使","つか"],["開","あ"],["移","うつ"],["板","ばん"],["中","ちゅう"],["学習","がくしゅう"],["問題数","もんだいすう"],["問題","もんだい"],["正答率","せいとうりつ"],["苦手","にがて"],["記録","きろく"],["単元","たんげん"],["教科別","きょうかべつ"],["連続","れんぞく"],["理科","りか"],["社会","しゃかい"],["英語","えいご"],["中学","ちゅうがく"],["復習","ふくしゅう"],["直近","ちょっきん"],["合計","ごうけい"]];
+  RUBY.sort((a,b)=>b[0].length-a[0].length);
+  const RX=new RegExp(RUBY.map(r=>r[0]).join("|"),"g");
+  const RMAP=Object.fromEntries(RUBY);
+  const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const rb=s=>esc(s).replace(RX,m=>"<ruby>"+m+"<rt>"+RMAP[m]+"</rt></ruby>");
+  const R=(tag,cls,s)=>{const e=el(tag,cls);e.innerHTML=rb(s);return e;};
+
+  const MEMBERS=[
+    {id:"papa",name:"パパ",ini:"パ",color:"var(--ai)"},
+    {id:"mama",name:"ママ",ini:"マ",color:"var(--fuji)"},
+    {id:"koume",name:"小梅",ini:"梅",color:"var(--ume)",sym:"ume"},
+    {id:"mitsuha",name:"光葉",ini:"葉",color:"var(--leaf)",sym:"mitsuba"},
+    {id:"all",name:"みんな",ini:"皆",color:"var(--gold)"}
+  ];
+  const mem=id=>MEMBERS.find(m=>m.id===id)||MEMBERS[4];
+  const WD=["日","月","火","水","木","金","土"];
+  const pad=n=>String(n).padStart(2,"0");
+  const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+  const TODAY=ymd(new Date());
+  const ICON={
+    home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/>',
+    cal:'<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    cart:'<path d="M3 4h2.5l2.2 10.5h10l2-7.5H7"/><circle cx="9.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/>',
+    chat:'<path d="M4 5h16v11H9l-5 4z"/>',
+    link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    send:'<path d="M4 12 20 4l-6 16-3-7z"/>',
+    check:'<path d="M5 12.5 10 17 19 7"/>',
+    pen:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+    book:'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/>',
+    study:'<path d="M3 6.5 12 3l9 3.5-9 3.5z"/><path d="M7 8.3V13c0 1.7 2.2 3 5 3s5-1.3 5-3V8.3"/><path d="M21 6.5V12"/>',
+    copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>'
+  };
+  const svg=(k,w)=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.8)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICON[k]+'</svg>';
+  const use=(id,cls,vb)=>'<svg'+(cls?' class="'+cls+'"':'')+' viewBox="0 0 '+(vb||48)+' '+(vb||48)+'" aria-hidden="true"><use href="#'+id+'" width="'+(vb||48)+'" height="'+(vb||48)+'"/></svg>';
+
+  /* card ornaments */
+  const DECO_TL='<svg class="deco tl" viewBox="0 0 78 62" aria-hidden="true"><path d="M4 50C16 34 30 26 52 20" stroke="var(--bark)" stroke-width="2.4" fill="none" stroke-linecap="round"/><use href="#ume" x="0" y="20" width="36" height="36"/><use href="#ume" x="30" y="0" width="28" height="28"/><use href="#bud" x="54" y="12" width="13" height="13"/><use href="#mitsuba" x="22" y="34" width="22" height="22" transform="rotate(40 33 45)"/></svg>';
+  const DECO_BR='<svg class="deco br" viewBox="0 0 56 52" aria-hidden="true"><use href="#mitsuba" x="10" y="2" width="40" height="40" transform="rotate(-150 30 22)"/><use href="#petal" x="2" y="34" width="12" height="12" transform="rotate(30 8 40)"/><use href="#petal" x="40" y="38" width="10" height="10" transform="rotate(-20 45 43)"/></svg>';
+  let crestFlip=0;
+  const crest=()=>'<span class="crest" aria-hidden="true">'+use((crestFlip++%2)?"mitsuba":"ume",null,30)+'</span>';
+  const DIV='<div class="divider" aria-hidden="true"><svg viewBox="0 0 92 26"><path d="M6 13C26 6 66 20 86 13" stroke="var(--bark)" stroke-width="1.4" fill="none"/><use href="#mitsuba" x="2" y="3" width="20" height="20" transform="rotate(-60 12 13)"/><use href="#bud" x="22" y="4" width="10" height="10"/><use href="#ume" x="33" y="0" width="26" height="26"/><use href="#bud" x="60" y="10" width="10" height="10" transform="rotate(160 65 15)"/><use href="#mitsuba" x="70" y="3" width="20" height="20" transform="rotate(60 80 13)"/></svg></div>';
+  const MARK={
+    ume:'<svg class="mark" viewBox="0 0 84 84" aria-hidden="true"><g opacity=".9"><use href="#ume" x="22" y="22" width="56" height="56"/><use href="#bud" x="8" y="20" width="18" height="18"/></g></svg>',
+    mitsuba:'<svg class="mark" viewBox="0 0 84 84" aria-hidden="true"><use href="#mitsuba" x="16" y="14" width="64" height="64" transform="rotate(-20 48 46)"/></svg>',
+    mix:'<svg class="mark" viewBox="0 0 84 84" aria-hidden="true"><use href="#mitsuba" x="30" y="24" width="50" height="50" transform="rotate(30 55 49)"/><use href="#ume" x="14" y="34" width="38" height="38"/></svg>',
+    petals:'<svg class="mark" viewBox="0 0 84 84" aria-hidden="true"><use href="#ume" x="36" y="36" width="40" height="40"/><use href="#petal" x="18" y="40" width="16" height="16" transform="rotate(-30 26 48)"/><use href="#petal" x="40" y="18" width="14" height="14" transform="rotate(40 47 25)"/><use href="#petal" x="22" y="64" width="12" height="12"/></svg>'
+  };
+  const UME_PIN="url(\"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 24 24"><g fill="#fff">'+[0,72,144,216,288].map(a=>'<circle cx="0" cy="-6" r="5" transform="rotate('+a+')"/>').join("")+'</g><circle r="3" fill="#f2d99a"/></svg>')+"\")";
+  document.documentElement.style.setProperty("--ume-pin",UME_PIN);
+
+  const TABS=[{id:"home",label:"ホーム",icon:"home"},{id:"plan",label:"予定",icon:"cal"},{id:"shop",label:"買うもの",icon:"cart"},{id:"board",label:"伝言",icon:"chat"},{id:"study",label:"学習",icon:"study"},{id:"info",label:"おうち情報",icon:"book"}];
+  const SECS=[
+    {id:"home",jp:"家の住所",en:"Our Home",sym:"ume",hint:"住所・郵便番号・最寄り駅など",ph:"項目（例: 自宅の住所）"},
+    {id:"emergency",jp:"緊急連絡先",en:"Emergency",sym:"bud",hint:"かかりつけの病院・学校・職場など",ph:"項目（例: かかりつけ小児科）"},
+    {id:"family",jp:"実家の連絡先",en:"Family Homes",sym:"mitsuba",hint:"実家の住所や電話番号",ph:"項目（例: パパの実家）"},
+    {id:"tree",jp:"家系図",en:"Family Tree",sym:"ume",hint:"ご先祖さまの名前・続柄・生まれ年・出身地など",ph:"名前（例: 曾祖父 ○○）"}
+  ];
+  const FIXED=[["警察","110"],["消防・救急","119"],["救急相談（東京）","#7119"]];
+
+  let S={items:[],events:[],messages:[],info:[]};
+  let infoSec="home";
+  let db=true, editing=false, selDay=TODAY;
+  let me=BOOT.me;
+  const busy=new Set();
+
+  function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),1600);}
+  function setStatus(s){$("status").querySelector("span").innerHTML=rb(s);}
+  function call(fn,...args){return api(fn,args);}
+  const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  async function mutate(local,fn,args,okMsg){
+    const snap=JSON.stringify(S);local();render();
+    try{const d=await call(fn,...args);if(d)S=d;render();if(okMsg)toast(okMsg);}
+    catch(e){S=JSON.parse(snap);render();toast((e&&e.message)||"保存できませんでした");}
+  }
+  function ago(ms){if(!ms)return"";const d=Math.floor((Date.now()-ms)/86400000);return d<=0?"今日":d===1?"昨日":d+"日前";}
+  function when(ms){const d=new Date(ms);return (ymd(d)===TODAY?"今日":(d.getMonth()+1)+"/"+d.getDate())+" "+pad(d.getHours())+":"+pad(d.getMinutes());}
+  function md(s){const [y,m,d]=s.split("-").map(Number);const dt=new Date(y,m-1,d);return m+"/"+d+"（"+WD[dt.getDay()]+"）";}
+
+  const t=new Date();$("today").textContent=t.getFullYear()+"年"+(t.getMonth()+1)+"月"+t.getDate()+"日（"+WD[t.getDay()]+"）";
+
+  let VIEW="home";function cur(){return VIEW;}
+  function go(id){VIEW=id;editing=false;render();window.scrollTo(0,0);}
+  $("brand").addEventListener("click",e=>{e.preventDefault();go("home");});
+
+  function renderTabs(){
+    const nav=$("tabs");nav.textContent="";
+    const outN=S.items.filter(i=>i.out).length;
+    TABS.forEach((tb,i)=>{
+      const b=el("button","tab");b.type="button";b.setAttribute("aria-label",tb.label);
+      if(cur()===tb.id)b.setAttribute("aria-current","page");
+      b.insertAdjacentHTML("beforeend",use(i%2?"mitsuba":"ume","cur",22));
+      b.insertAdjacentHTML("beforeend",svg(tb.icon));
+      b.appendChild(R("span",null,tb.label));
+      if(tb.id==="shop"&&outN)b.appendChild(el("span","dot",String(outN)));
+      b.onclick=()=>go(tb.id);nav.appendChild(b);
+    });
+  }
+
+  function card(jp,en,extra){
+    const c=el("section","card");
+    c.insertAdjacentHTML("beforeend",DECO_TL+DECO_BR+crest());
+    const h=el("div","head");
+    const tt=el("div","ttl");tt.appendChild(el("span","en",en));tt.appendChild(R("h2",null,jp));h.appendChild(tt);
+    if(extra)(Array.isArray(extra)?extra:[extra]).forEach(x=>x&&h.appendChild(x));
+    c.appendChild(h);return c;
+  }
+  function btn(cls,label,icon,type){const b=el("button",cls);b.type=type||"button";b.setAttribute("aria-label",label);if(icon)b.insertAdjacentHTML("beforeend",svg(icon,2.2));b.appendChild(R("span",null,label));return b;}
+  function whoPill(id){const m=mem(id);const p=el("span","who",m.name);p.style.background=m.color;return p;}
+  function picker(selected,onPick,withAll){
+    const p=el("div","pick");
+    MEMBERS.filter(m=>withAll||m.id!=="all").forEach(m=>{
+      const b=el("button",null,m.name);b.type="button";
+      const on=m.id===selected;b.setAttribute("aria-pressed",on);
+      if(on)b.style.background=m.color;
+      b.onclick=()=>onPick(m.id);p.appendChild(b);
+    });
+    return p;
+  }
+  function sortedEvents(){return S.events.slice().sort((a,b)=>(a.date+(a.time||"99")).localeCompare(b.date+(b.time||"99")));}
+  function evRow(e,showDate,canDel){
+    const r=el("div","ev");r.appendChild(el("time",null,e.time||"—"));
+    const tt=el("div","t",e.title);if(showDate)tt.prepend(el("span","d",e.date===TODAY?"今日":md(e.date)));
+    r.appendChild(tt);r.appendChild(whoPill(e.who));
+    if(canDel){const x=el("button","x","×");x.type="button";x.setAttribute("aria-label",e.title+"を削除");x.onclick=()=>del("events",e.id,"予定を削除しました");r.appendChild(x);}
+    return r;
+  }
+  function msgRow(m,canDel){
+    const r=el("div","msg");const mm=mem(m.who);
+    const a=el("span","ava",mm.ini);a.style.background=mm.color;if(mm.sym)a.insertAdjacentHTML("beforeend",use(mm.sym,null,20));r.appendChild(a);
+    const b=el("div","body");b.appendChild(el("div","meta",mm.name+" ・ "+when(m.at)));b.appendChild(el("div","text",m.text));r.appendChild(b);
+    if(canDel){const x=el("button","x","×");x.type="button";x.setAttribute("aria-label","伝言を削除");x.onclick=()=>del("messages",m.id,"伝言を削除しました");r.appendChild(x);}
+    return r;
+  }
+  function editBtn(){const b=btn("tool",editing?"完了":"編集",editing?"check":"pen");b.onclick=()=>{editing=!editing;render();};return b;}
+
+  /* ---------- views ---------- */
+  function vHome(v){
+    const outN=S.items.filter(i=>i.out).length;
+    const now=new Date();
+    const WEEKEND=ymd(new Date(now.getFullYear(),now.getMonth(),now.getDate()+((7-now.getDay())%7)));
+    const week=sortedEvents().filter(e=>e.date>=TODAY&&e.date<=WEEKEND);
+    const weekN=week.length;
+    const tiles=el("div","tiles");
+    [[weekN,"This Week","今週の予定","plan","mix","color-mix(in srgb,var(--ai) 14%,var(--paper))"],
+     [outN,"Shopping","買うもの","shop","ume","color-mix(in srgb,var(--ume) 18%,var(--paper))"],
+     [S.messages.length,"Messages","伝言","board","mitsuba","color-mix(in srgb,var(--leaf) 18%,var(--paper))"],
+     [null,"Records","おうち情報","info","petals","color-mix(in srgb,var(--gold) 20%,var(--paper))"]].forEach(([n,en,jp,to,mk,bg])=>{
+      const b=el("button","tile");b.type="button";b.style.setProperty("--tbg",bg);b.setAttribute("aria-label",n==null?jp:jp+" "+n);
+      b.insertAdjacentHTML("beforeend",MARK[mk]);
+      b.appendChild(el("span","en",en));
+      if(n==null){b.appendChild(R("span","sub","住所・連絡先・家系図"));}else b.appendChild(el("b","foil",String(n)));
+      b.appendChild(R("span","jp",jp));
+      b.onclick=()=>go(to);tiles.appendChild(b);
+    });
+    v.appendChild(tiles);
+    v.insertAdjacentHTML("beforeend",DIV);
+
+    const c1=card("今週の予定","This Week");
+    c1.appendChild(R("p","hint","今日から"+md(WEEKEND)+"まで"));
+    if(!week.length)c1.appendChild(R("p","empty","週末までの予定はありません。「予定」から追加できます"));
+    week.forEach(e=>c1.appendChild(evRow(e,true,false)));
+    v.appendChild(c1);
+
+    const out=S.items.filter(i=>i.out);
+    const c2=card("買うもの","Shopping List",out.length?el("span","tag",out.length+"点"):null);
+    if(!out.length)c2.appendChild(R("p","empty","今は全部そろっています"));
+    else{const ch=el("div","chips");out.forEach(i=>ch.appendChild(el("span","chip out",i.name)));c2.appendChild(ch);}
+    v.appendChild(c2);
+
+    const c3=card("最近の伝言","Messages");
+    const ms=S.messages.slice().sort((a,b)=>b.at-a.at).slice(0,2);
+    if(!ms.length)c3.appendChild(R("p","empty","伝言はまだありません"));
+    ms.forEach(m=>c3.appendChild(msgRow(m)));
+    v.appendChild(c3);
+  }
+
+  function vPlan(v){
+    const c=card("予定","Schedule");
+    const wk=el("div","week");const base=new Date();
+    const has=new Set(S.events.map(e=>e.date));
+    for(let i=0;i<7;i++){
+      const d=new Date(base.getFullYear(),base.getMonth(),base.getDate()+i);const s=ymd(d);
+      const b=el("button","day"+(s===selDay?" sel":"")+(has.has(s)?" has":"")+(d.getDay()===0?" sun":d.getDay()===6?" sat":""));b.type="button";
+      b.appendChild(i===0?R("small",null,"今日"):el("small",null,WD[d.getDay()]));b.appendChild(el("strong",null,String(d.getDate())));
+      b.insertAdjacentHTML("beforeend",use("ume","flag",12));
+      b.setAttribute("aria-label",md(s)+(has.has(s)?" 予定あり":""));b.onclick=()=>{selDay=s;render();};wk.appendChild(b);
+    }
+    c.appendChild(wk);
+    const day=sortedEvents().filter(e=>e.date===selDay);
+    c.appendChild(R("p","hint",md(selDay)+" の予定"));
+    if(!day.length)c.appendChild(R("p","empty","この日の予定はありません"));
+    day.forEach(e=>c.appendChild(evRow(e,false,true)));
+
+    const f=el("form","form");
+    const ti=el("input","in");ti.id="evTitle";ti.placeholder="予定の名前";ti.maxLength=40;ti.setAttribute("aria-label","予定の名前");
+    const r2=el("div","row");
+    const di=el("input","in");di.id="evDate";di.type="date";di.value=selDay;di.setAttribute("aria-label","日付");
+    const tm=el("input","in");tm.id="evTime";tm.type="time";tm.setAttribute("aria-label","時間");r2.append(di,tm);
+    let who=me||"all";
+    const pk=el("div");const drawPk=()=>{pk.textContent="";pk.appendChild(picker(who,id=>{who=id;drawPk();},true));};drawPk();
+    f.append(ti,r2,pk,btn("go","予定を追加","plus","submit"));
+    f.addEventListener("submit",async e=>{e.preventDefault();
+      const title=ti.value.trim();if(!title||!di.value||!db)return;
+      const ev={id:newId(),title,date:di.value,time:tm.value||"",who,at:Date.now()};selDay=di.value;ti.value="";tm.value="";
+      mutate(()=>S.events.push(ev),"api_add",["events",ev],"予定を追加しました");
+    });
+    c.appendChild(f);v.appendChild(c);
+
+    const end=ymd(new Date(base.getFullYear(),base.getMonth(),base.getDate()+6));
+    const later=sortedEvents().filter(e=>e.date>end);
+    if(later.length){v.insertAdjacentHTML("beforeend",DIV);const c2=card("その先の予定","Later");later.slice(0,8).forEach(e=>c2.appendChild(evRow(e,true,true)));v.appendChild(c2);}
+  }
+
+  function vShop(v){
+    const out=S.items.filter(i=>i.out).sort((a,b)=>(a.outAt||0)-(b.outAt||0));
+    const c=card("買うもの","Shopping List",out.length?el("span","tag",out.length+"点"):null);
+    if(!out.length)c.appendChild(R("p","empty","今は全部そろっています"));
+    out.forEach(i=>{const r=el("div","buyrow");const n=el("span","n");n.innerHTML=use("ume",null,20);n.appendChild(el("span",null,i.name));r.appendChild(n);
+      r.appendChild(el("span","w",ago(i.outAt)));
+      const b=btn("bought","買った","check");b.onclick=()=>setOut(i,false);r.appendChild(b);c.appendChild(r);});
+    v.appendChild(c);
+    v.insertAdjacentHTML("beforeend",DIV);
+
+    const c2=el("section","card");c2.setAttribute("aria-label","日用品の一覧");
+    c2.insertAdjacentHTML("beforeend",DECO_TL+DECO_BR+crest());
+    if(editing)c2.classList.add("editing");
+    const top=el("div","toprow");top.appendChild(R("p","hint","予備を開けたらタップ → 「買うもの」に移ります"));top.appendChild(editBtn());c2.appendChild(top);
+    const ch=el("div","chips");
+    S.items.slice().sort((a,b)=>(a.order??0)-(b.order??0)).forEach(i=>{
+      const b=el("button","chip"+(i.out?" out":""),i.name);b.type="button";b.setAttribute("aria-pressed",!!i.out);
+      const x=el("span","del","×");x.setAttribute("aria-hidden","true");b.appendChild(x);
+      b.onclick=()=>editing?del("items",i.id,i.name+"を削除しました"):setOut(i,!i.out);ch.appendChild(b);
+    });
+    c2.appendChild(ch);
+    const f=el("form","form");const r=el("div","row");
+    const inp=el("input","in");inp.id="itemName";inp.placeholder="品目を追加";inp.maxLength=30;inp.setAttribute("aria-label","品目");
+    r.append(inp,btn("go","追加","plus","submit"));f.appendChild(r);
+    f.addEventListener("submit",async e=>{e.preventDefault();const n=inp.value.trim();if(!n||!db)return;
+      if(S.items.some(i=>i.name===n)){toast(n+" はもうあります");return;}
+      const order=S.items.reduce((m,i)=>Math.max(m,i.order??0),0)+1;
+      const it={id:newId(),name:n,out:false,outAt:0,order};inp.value="";mutate(()=>S.items.push(it),"api_add",["items",it],n+" を追加しました");
+    });
+    c2.appendChild(f);v.appendChild(c2);
+  }
+
+  function vBoard(v){
+    const c=card("伝言板","Message Board");
+    const f=el("form","form");f.style.cssText="margin-top:0;padding-top:0;border-top:0;margin-bottom:16px";
+    const r=el("div","row");const inp=el("input","in");inp.id="msgText";inp.placeholder="家族に伝えたいこと";inp.maxLength=200;inp.setAttribute("aria-label","伝言");
+    r.append(inp,btn("go","送る","send","submit"));
+    f.append(R("p","hint",mem(me).name+" として書きます"),r);
+    f.addEventListener("submit",async e=>{e.preventDefault();const tx=inp.value.trim();if(!tx||!db)return;
+      const m={id:newId(),text:tx,who:me,at:Date.now()};inp.value="";mutate(()=>S.messages.unshift(m),"api_add",["messages",m],"送りました");
+    });
+    c.appendChild(f);
+    const ms=S.messages.slice().sort((a,b)=>b.at-a.at);
+    if(!ms.length)c.appendChild(R("p","empty","まだ伝言はありません。最初のひとことをどうぞ"));
+    ms.slice(0,30).forEach(m=>c.appendChild(msgRow(m,true)));
+    v.appendChild(c);
+  }
+
+  /* ---------- 学習 ---------- */
+  let PROG=null,progAt=0,progLoading=false;
+  const SUBJ={rika:["理科","var(--leaf)"],shakai:["社会","var(--gold)"],eigo:["英語","var(--ai)"]};
+  const pct=(c,n)=>n?Math.round(c/n*100):0;
+  async function loadProg(){
+    if(progLoading)return;progLoading=true;
+    try{PROG=await call("api_studyProgress");}catch(e){PROG={error:(e&&e.message)||"学習の記録を読み込めませんでした"};}
+    progAt=Date.now();progLoading=false;if(cur()==="study")render();
+  }
+  function subjPill(k){const s=SUBJ[k]||["?","var(--muted)"];const p=el("span","sp",s[0]);p.style.background=s[1];return p;}
+  function progCard(p){
+    const c=card(p.name+" の学習","Progress",p.lastAt?el("span","tag","最終 "+ago(p.lastAt)):null);
+    if(!p.all.n){c.appendChild(R("p","empty","まだ記録がありません。ドリルを解くとここに出ます"));return c;}
+
+    const st=el("div","stats");
+    [[p.week.n+"問","今週の問題数"],[p.week.n?pct(p.week.c,p.week.n)+"%":"—","今週の正答率"],[p.streak+"日","連続記録"]].forEach(([val,label])=>{
+      const s=el("div","stat");s.appendChild(el("b",null,val));s.appendChild(R("span",null,label));st.appendChild(s);
+    });
+    c.appendChild(st);
+    c.appendChild(el("p","hint","これまで合計 "+p.all.n+"問・正答率 "+pct(p.all.c,p.all.n)+"%"));
+
+    c.appendChild(R("h3","sub-h","教科別の正答率(ここ1か月)"));
+    Object.keys(SUBJ).forEach(k=>{
+      const b=p.bySubj[k]||{c:0,n:0};
+      const r=el("div","sbar");r.appendChild(R("span","nm",SUBJ[k][0]));
+      const tr=el("div","track");const fill=el("i");fill.style.width=pct(b.c,b.n)+"%";fill.style.background=SUBJ[k][1];tr.appendChild(fill);r.appendChild(tr);
+      r.appendChild(el("span","v",b.n?pct(b.c,b.n)+"% ・ "+b.n+"問":"まだ"));
+      c.appendChild(r);
+    });
+    const mc=p.missCount||{};
+    c.appendChild(el("p","misses","苦手リストに残っている問題:理科 "+(mc.rika||0)+"問・社会 "+(mc.shakai||0)+"問・英語 "+(mc.eigo||0)+"問"));
+
+    if(p.weak&&p.weak.length){
+      c.appendChild(R("h3","sub-h","つまずいている単元"));
+      p.weak.forEach(u=>{
+        const r=el("div","wk");const t=el("div","t");t.appendChild(subjPill(u.subj));t.appendChild(document.createTextNode((u.term?u.term+"学期 ":"")+u.name+"("+u.n+"問)"));
+        r.appendChild(t);r.appendChild(el("span","p",pct(u.c,u.n)+"%"));c.appendChild(r);
+      });
+    }
+
+    c.appendChild(R("h3","sub-h","最近の記録"));
+    p.recent.forEach(l=>{
+      const r=el("div","lg");r.appendChild(el("time",null,when(l.at)));
+      const t=el("div","t");t.appendChild(subjPill(l.subj));t.appendChild(document.createTextNode(l.unitName||""));r.appendChild(t);
+      r.appendChild(el("span","s",l.correct+"/"+l.total));c.appendChild(r);
+    });
+    return c;
+  }
+  function vStudy(v){
+    if(!PROG||Date.now()-progAt>60000)loadProg();
+    const c0=card("一問一答ドリル","Study Drill");
+    c0.appendChild(R("p","hint","中学1年の理科・社会・英語。学期ごとの単元とまとめテストで復習できます"));
+    const a=el("a","go");a.href="study.html?k="+encodeURIComponent(BOOT.token);a.innerHTML=svg("study",2.2);a.appendChild(el("span",null,"ドリルをひらく"));
+    c0.appendChild(a);v.appendChild(c0);
+    v.insertAdjacentHTML("beforeend",DIV);
+    if(!PROG){v.appendChild(R("p","empty","学習の記録を読み込み中…"));return;}
+    if(PROG.error){v.appendChild(el("p","empty",PROG.error));return;}
+    if(!PROG.people.length){v.appendChild(R("p","empty","まだ学習の記録はありません"));return;}
+    PROG.people.forEach(p=>v.appendChild(progCard(p)));
+  }
+
+  function copyBtn(text){
+    const b=el("button","copy");b.type="button";b.insertAdjacentHTML("beforeend",svg("copy",2));b.appendChild(el("span",null,"コピー"));
+    b.onclick=async()=>{
+      try{await navigator.clipboard.writeText(text);toast("コピーしました");}
+      catch(_){const val=b.closest(".rec").querySelector(".val");const r=document.createRange();r.selectNodeContents(val);const s=getSelection();s.removeAllRanges();s.addRange(r);toast("選択しました。長押しでコピーできます");}
+    };
+    return b;
+  }
+  function mapLink(text){
+    const q=text.split("\n").map(s=>s.trim()).filter(Boolean).filter(s=>!/^(TEL|tel|電話|☎)/.test(s)&&!/^[0-9０-９\-‐ー()（）+ ]{8,}$/.test(s)).join(" ");
+    const a=el("a","copy");a.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q||text);a.target="_blank";a.rel="noopener";
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
+    a.appendChild(el("span",null,"地図"));return a;
+  }
+  function vInfo(v){
+    const sec=SECS.find(s=>s.id===infoSec)||SECS[0];
+    const tabs=el("div","sec-tabs");
+    SECS.forEach(s=>{const b=el("button");b.type="button";b.setAttribute("aria-pressed",s.id===sec.id);
+      b.insertAdjacentHTML("beforeend",use(s.sym,null,18));b.appendChild(R("span",null,s.jp));
+      b.onclick=()=>{infoSec=s.id;editing=false;render();};tabs.appendChild(b);});
+    v.appendChild(tabs);
+
+    const c=card(sec.jp,sec.en,editBtn());
+    if(editing)c.classList.add("editing");
+    c.appendChild(R("p","hint",sec.hint));
+    if(sec.id==="emergency"){
+      FIXED.forEach(([label,num])=>{const r=el("div","rec fixed");r.insertAdjacentHTML("beforeend",use("bud","leafmark",22));
+        r.appendChild(R("b",null,label));r.appendChild(el("span","val big",num));c.appendChild(r);});
+    }
+    const list=S.info.filter(x=>x.cat===sec.id).sort((a,b)=>(a.order??0)-(b.order??0));
+    if(!list.length&&sec.id!=="emergency")c.appendChild(R("p","empty","まだ登録がありません。下から追加できます"));
+    list.forEach((x,i)=>{
+      const r=el("div","rec");r.insertAdjacentHTML("beforeend",use(i%2?"mitsuba":"ume","leafmark",22));
+      r.appendChild(el("b",null,x.label));if(x.value)r.appendChild(el("span","val",x.value));
+      const acts=el("div","acts");if(x.value)acts.appendChild(copyBtn(x.value));if(x.value&&(sec.id==="home"||sec.id==="family"))acts.appendChild(mapLink(x.value));r.appendChild(acts);
+      const del_=el("button","x","×");del_.type="button";del_.setAttribute("aria-label",x.label+"を削除");
+      del_.onclick=()=>del("info",x.id,x.label+"を削除しました");r.appendChild(del_);
+      c.appendChild(r);
+    });
+
+    const f=el("form","form");
+    const t1=el("input","in");t1.id="infoLabel";t1.placeholder=sec.ph;t1.maxLength=40;t1.setAttribute("aria-label","項目");
+    const t2=el("textarea","in");t2.id="infoValue";t2.placeholder=sec.id==="tree"?"続柄・生まれ年・出身地など":"内容（住所・電話番号など）";t2.maxLength=600;t2.setAttribute("aria-label","内容");
+    f.append(t1,t2,btn("go","追加","plus","submit"));
+    f.addEventListener("submit",async e=>{e.preventDefault();const label=t1.value.trim(),value=t2.value.trim();if(!label||!db)return;
+      const order=S.info.filter(x=>x.cat===sec.id).reduce((m,i)=>Math.max(m,i.order??0),0)+1;
+      const x={id:newId(),cat:sec.id,label,value,order,at:Date.now()};t1.value="";t2.value="";mutate(()=>S.info.push(x),"api_add",["info",x],"追加しました");
+    });
+    c.appendChild(f);
+    c.appendChild(R("p","note","この情報は、このページを共有した家族だけが見られます。公開リンクでは共有しないでください。"));
+    v.appendChild(c);
+  }
+
+  async function setOut(i,val){
+    if(busy.has(i.id))return;busy.add(i.id);
+    await mutate(()=>{const t=S.items.find(x=>x.id===i.id);if(t){t.out=val;t.outAt=val?Date.now():0;}},"api_setOut",[i.id,val],val?i.name+" を買うものへ":i.name+" を補充しました");
+    busy.delete(i.id);
+  }
+  async function del(colName,id,msg){mutate(()=>{S[colName]=S[colName].filter(x=>x.id!==id);},"api_delete",[colName,id],msg);}
+
+  function render(){
+    crestFlip=0;
+    renderTabs();
+    const v=$("view");v.textContent="";v.style.cssText="display:flex;flex-direction:column;gap:30px";
+    ({home:vHome,plan:vPlan,shop:vShop,board:vBoard,study:vStudy,info:vInfo})[cur()](v);
+  }
+  render();
+
+  /* drifting plum petals and trefoils in the header */
+  (function petals(){
+    const cv=$("petals");const ctx=cv.getContext&&cv.getContext("2d");if(!ctx)return;
+    const reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const cs=getComputedStyle(document.documentElement);
+    let W=0,H=0;const dpr=Math.min(window.devicePixelRatio||1,2);
+    function size(){const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);}
+    size();window.addEventListener("resize",size);
+    const P=Array.from({length:16},()=>({x:Math.random()*W,y:Math.random()*H,r:3.5+Math.random()*3.5,vx:.12+Math.random()*.3,vy:.18+Math.random()*.32,a:Math.random()*6.28,va:(Math.random()-.5)*.03,leaf:Math.random()<.3}));
+    function petal(r){ctx.beginPath();ctx.moveTo(0,r);ctx.bezierCurveTo(-r*.9,r*.6,-r*1.1,-r*.4,-r*.6,-r*.8);ctx.quadraticCurveTo(-r*.25,-r*1.05,0,-r*.6);ctx.quadraticCurveTo(r*.25,-r*1.05,r*.6,-r*.8);ctx.bezierCurveTo(r*1.1,-r*.4,r*.9,r*.6,0,r);ctx.fill();}
+    function draw(){
+      const ume=cs.getPropertyValue("--ume-hi").trim()||"#ffc1d2",leaf=cs.getPropertyValue("--leaf-hi").trim()||"#9fd88f";
+      ctx.clearRect(0,0,W,H);
+      P.forEach(p=>{
+        ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);
+        if(p.leaf){ctx.globalAlpha=.75;ctx.fillStyle=leaf;for(let k=0;k<3;k++){ctx.save();ctx.rotate(k*2.09);ctx.translate(0,-p.r*.55);petal(p.r*.55);ctx.restore();}}
+        else{ctx.globalAlpha=.7;ctx.fillStyle=ume;petal(p.r);}
+        ctx.restore();
+      });
+    }
+    function step(){
+      P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=p.va;if(p.y>H+10||p.x>W+10){p.x=Math.random()*W*.7-10;p.y=-10;}});
+      draw();
+      if(document.hidden)setTimeout(()=>requestAnimationFrame(step),500);else requestAnimationFrame(step);
+    }
+    if(reduce)draw();else requestAnimationFrame(step);
+  })();
+
+  async function sync(){
+    if(!me||document.hidden)return;
+    if(cur()==="study")loadProg();
+    try{const d=await call("api_all");const ae=document.activeElement;S=d;if(ae&&(ae.tagName==="INPUT"||ae.tagName==="TEXTAREA")&&ae.value){renderTabs();return;}render();}catch(_){}
+  }
+  function noLink(msg){
+    me=null;setStatus("開けませんでした");
+    $("tabs").textContent="";
+    const v=$("view");v.textContent="";
+    const c=card("このリンクでは開けません","Family Base");
+    c.appendChild(el("p",null,msg));
+    c.appendChild(el("p","note","おうちベースを用意した家族に、自分用のリンクをもう一度送ってもらってください。"));
+    v.appendChild(c);
+  }
+  async function start(){
+    if(!/^[a-f0-9]{32}$/.test(KEY)){noLink("リンクが途中で切れているか、古いリンクの可能性があります。");return;}
+    try{
+      const b=await api("api_boot");
+      BOOT.me=b.me;BOOT.data=b.data;
+    }catch(e){noLink((e&&e.message)||"通信できませんでした。電波のよい所でもう一度開いてください。");return;}
+    me=BOOT.me;
+    S=BOOT.data||S;
+    setStatus(mem(me).name+" として表示中");
+    render();
+  }
+  start();
+  setInterval(sync,60000);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)sync();});
+
+})();
+</script>
+</body>
+</html>
