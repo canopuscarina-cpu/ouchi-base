@@ -262,6 +262,7 @@ a.go{text-decoration:none}
 .card.tap{cursor:pointer}
 .prow .t .who{margin-left:6px;font-size:11px;padding:0 8px;vertical-align:1px}
 .tgt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);font-weight:700}
+.tgt .linkbtn{margin-left:auto;border:1px solid var(--gold);border-radius:999px;padding:5px 14px;background:var(--paper);color:var(--ink);font-size:13px;font-weight:700}
 
 /* countdown */
 .drow{display:flex;align-items:center;gap:14px;padding:10px 0;border-top:1px dashed var(--hair)}
@@ -826,13 +827,30 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   function decide(p,ok){
     mutate(()=>{const x=(S.points||[]).find(y=>y.id===p.id);if(x)x.status=ok?"ok":"ng";},"api_pointDecide",[p.id,ok],ok?"承認しました":"見送りにしました");
   }
+  const plOpen={chores:false,rewards:false};let pWho="";
   function listCard(kind,jp,en){
     const reward=kind==="rewards";
     const c=card(jp,en,isParent()?editBtn():null);if(editing)c.classList.add("editing");
     const my=avail(me);
     if(isParent())c.appendChild(R("p","hint",editing?"×で削除。下の欄で、だれ向けかを選んで追加できます":(reward?"子どもが交換を申請すると承認待ちに入ります":"子どもが「やった」を押すと承認待ちに入ります")));
     else c.appendChild(R("p","hint",reward?"今つかえるのは "+my+"pt。交換はパパかママの承認のあとで差し引かれます":"やったら「やった」を押してね。パパかママが承認するとポイントが入ります"));
-    const list=(S[kind]||[]).filter(it=>isParent()||forMe(it)).slice().sort((a,b)=>(isParent()?tgtRank(a)-tgtRank(b):0)||(a.order||0)-(b.order||0));
+    const all=(S[kind]||[]).filter(it=>isParent()||forMe(it));
+    // 親の画面は一覧をたたんでおき、ひらいたら「だれの」で絞り込める
+    if(isParent()&&!editing){
+      const groups=[{id:"",name:"すべて"}].concat(KIDS(),[{id:"all",name:"みんな",color:"var(--gold)"}]);
+      const cnt=g=>g.id===""?all.length:all.filter(it=>g.id==="all"?!it.for:String(it.for||"").split(",").includes(g.id)).length;
+      const bar=el("div","tgt");
+      if(plOpen[kind]){
+        const pk=el("div","pick");
+        groups.forEach(g=>{const b=el("button",null,g.name+" "+cnt(g));b.type="button";const on=g.id===pWho;b.setAttribute("aria-pressed",on);if(on)b.style.background=g.color||"var(--ink)";b.onclick=()=>{pWho=g.id;render();};pk.appendChild(b);});
+        bar.appendChild(pk);
+      }else bar.appendChild(el("span",null,groups.slice(1).map(g=>g.name+" "+cnt(g)).join("・")));
+      const tg=el("button","linkbtn",plOpen[kind]?"とじる":"一覧をひらく（"+all.length+"件）");tg.type="button";tg.onclick=()=>{plOpen[kind]=!plOpen[kind];render();};
+      bar.appendChild(tg);c.appendChild(bar);
+      if(!plOpen[kind])return c;
+    }
+    const list=all.filter(it=>!isParent()||editing||!pWho||(pWho==="all"?!it.for:String(it.for||"").split(",").includes(pWho)))
+      .slice().sort((a,b)=>(isParent()?tgtRank(a)-tgtRank(b):0)||(reward?a.pt-b.pt:0)||(a.order||0)-(b.order||0));
     if(!list.length)c.appendChild(R("p","empty","まだ登録がありません"));
     const mine=(S.points||[]).filter(p=>p.who===me&&p.status==="pending"&&p.kind===(reward?"reward":"chore"));
     list.forEach(it=>{
