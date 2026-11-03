@@ -234,6 +234,20 @@ a.go{text-decoration:none}
 .lg .s{font-family:var(--latin);font-weight:600;font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .sp{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:0 8px;color:#fff;margin-right:6px;line-height:1.8;vertical-align:1px}
 .misses{font-size:13px;color:var(--muted);margin:10px 0 0}
+/* points */
+.pbal{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.pb{border:1px solid var(--gold-soft);border-radius:12px;background:var(--bg);padding:10px 12px;display:flex;align-items:center;gap:12px;min-width:0}
+.pb .ava{width:36px;height:36px;font-size:14px}
+.pb b{display:block;font-family:var(--latin);font-weight:600;font-size:32px;line-height:1;font-variant-numeric:tabular-nums}
+.pb small{display:block;font-size:11px;color:var(--muted);font-weight:700;line-height:1.8}
+.prow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px dashed var(--hair)}
+.prow .t{flex:1;min-width:0;font-weight:500;overflow-wrap:anywhere}
+.ptv{font-family:var(--latin);font-weight:600;font-size:19px;color:var(--gold-lo);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ptv.minus{color:var(--ume-lo)}
+.wait{font-size:11px;font-weight:700;color:var(--ume-lo);border:1px solid var(--ume);border-radius:999px;padding:0 9px;white-space:nowrap;line-height:2}
+.wait.ng{color:var(--muted);border-color:var(--hair)}
+.prow .bought:disabled{opacity:.4;cursor:default}
+.card.tap{cursor:pointer}
 
 </style>
 
@@ -348,6 +362,8 @@ a.go{text-decoration:none}
   const API="https://script.google.com/macros/s/AKfycby1r1W0vTnkbKJLNlEog6C-kwbMdLcn56dahj6qhBcey8BEuHWdkDMWGsM0o0rp5om3/exec";
 function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credentials:"omit",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({k:KEY,fn:fn,args:args||[]})},opt||{})).then(r=>{if(!r.ok)throw new Error("通信できませんでした");return r.json();}).then(j=>{if(!j.ok)throw new Error(j.error||"保存できませんでした");return j.data;});}
   let BOOT={token:KEY,me:null,data:null};
+  let LOADED=false;const CK="ouchibase:"+KEY;
+  function saveCache(){if(!LOADED||!me)return;try{localStorage.setItem(CK,JSON.stringify({me:me,data:S}));}catch(_){}}
   const $=id=>document.getElementById(id);
   const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
 
@@ -357,6 +373,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     ["最初","さいしょ"],["登録","とうろく"],["保存","ほぞん"],["補充","ほじゅう"],["小学校","しょうがっこう"],["お知","おし"],["共有","きょうゆう"],
     ["情報","じょうほう"],["住所","じゅうしょ"],["緊急","きんきゅう"],["連絡先","れんらくさき"],["実家","じっか"],["家系図","かけいず"],["内容","ないよう"],
     ["項目","こうもく"],["警察","けいさつ"],["消防","しょうぼう"],["救急","きゅうきゅう"],["相談","そうだん"],["番号","ばんごう"],["電話","でんわ"],
+    ["手伝","てつだ"],["承認","しょうにん"],["交換","こうかん"],["申請","しんせい"],["見送","みおく"],["差","さ"],["引","ひ"],["押","お"],
     ["買","か"],["送","おく"],["家","いえ"],["先","さき"],["日","ひ"],["書","か"],["伝","つた"],["使","つか"],["開","あ"],["移","うつ"],["板","ばん"],["中","ちゅう"],["学習","がくしゅう"],["問題数","もんだいすう"],["問題","もんだい"],["正答率","せいとうりつ"],["苦手","にがて"],["記録","きろく"],["単元","たんげん"],["教科別","きょうかべつ"],["連続","れんぞく"],["理科","りか"],["社会","しゃかい"],["英語","えいご"],["中学","ちゅうがく"],["復習","ふくしゅう"],["直近","ちょっきん"],["合計","ごうけい"]];
   RUBY.sort((a,b)=>b[0].length-a[0].length);
   const RX=new RegExp(RUBY.map(r=>r[0]).join("|"),"g");
@@ -389,6 +406,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     pen:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
     book:'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11M9 8h6"/>',
     study:'<path d="M3 6.5 12 3l9 3.5-9 3.5z"/><path d="M7 8.3V13c0 1.7 2.2 3 5 3s5-1.3 5-3V8.3"/><path d="M21 6.5V12"/>',
+    star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/>',
     copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>'
   };
   const svg=(k,w)=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||1.8)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICON[k]+'</svg>';
@@ -409,7 +427,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   const UME_PIN="url(\"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -12 24 24"><g fill="#fff">'+[0,72,144,216,288].map(a=>'<circle cx="0" cy="-6" r="5" transform="rotate('+a+')"/>').join("")+'</g><circle r="3" fill="#f2d99a"/></svg>')+"\")";
   document.documentElement.style.setProperty("--ume-pin",UME_PIN);
 
-  const TABS=[{id:"home",label:"ホーム",icon:"home"},{id:"plan",label:"予定",icon:"cal"},{id:"shop",label:"買うもの",icon:"cart"},{id:"board",label:"伝言",icon:"chat"},{id:"study",label:"学習",icon:"study"},{id:"info",label:"おうち情報",icon:"book"}];
+  const TABS=[{id:"home",label:"ホーム",icon:"home"},{id:"plan",label:"予定",icon:"cal"},{id:"shop",label:"買うもの",icon:"cart"},{id:"board",label:"伝言",icon:"chat"},{id:"study",label:"がんばり",icon:"star"},{id:"info",label:"おうち情報",icon:"book"}];
   const SECS=[
     {id:"home",jp:"家の住所",en:"Our Home",sym:"ume",hint:"住所・郵便番号・最寄り駅など",ph:"項目（例: 自宅の住所）"},
     {id:"emergency",jp:"緊急連絡先",en:"Emergency",sym:"bud",hint:"かかりつけの病院・学校・職場など",ph:"項目（例: かかりつけ小児科）"},
@@ -418,7 +436,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   ];
   const FIXED=[["警察","110"],["消防・救急","119"],["救急相談（東京）","#7119"]];
 
-  let S={items:[],events:[],messages:[],info:[]};
+  let S={items:[],events:[],messages:[],info:[],chores:[],rewards:[],points:[],balance:{}};
   let infoSec="home";
   let db=true, editing=false, selDay=TODAY;
   let me=BOOT.me;
@@ -453,6 +471,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
       b.insertAdjacentHTML("beforeend",svg(tb.icon));
       b.appendChild(R("span",null,tb.label));
       if(tb.id==="shop"&&outN)b.appendChild(el("span","dot",String(outN)));
+      if(tb.id==="study"&&pendingN())b.appendChild(el("span","dot",String(pendingN())));
       b.onclick=()=>go(tb.id);nav.appendChild(b);
     });
   }
@@ -515,6 +534,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     });
     v.appendChild(tiles);
     v.insertAdjacentHTML("beforeend",DIV);
+    {const bc=balCard();bc.classList.add("tap");bc.addEventListener("click",()=>go("study"));if(pendingN())bc.querySelector(".head").appendChild(el("span","tag","承認待ち "+pendingN()));v.appendChild(bc);}
 
     const c1=card("今週の予定","This Week");
     c1.appendChild(R("p","hint","今日から"+md(WEEKEND)+"まで"));
@@ -668,10 +688,106 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     });
     return c;
   }
+  /* ---------- がんばりポイント ---------- */
+  const PARENTS=["papa","mama"];
+  const isParent=()=>PARENTS.includes(me);
+  const bal=id=>((S.balance||{})[id])||{total:0,week:0,held:0};
+  const avail=id=>bal(id).total-bal(id).held;
+  const earners=()=>MEMBERS.filter(m=>m.id!=="all"&&(!PARENTS.includes(m.id)||bal(m.id).total||bal(m.id).week));
+  const pendingN=()=>isParent()?(S.points||[]).filter(p=>p.status==="pending").length:0;
+  const ptText=p=>p.pt>0?"+"+p.pt:String(p.pt);
+  function balCard(){
+    const c=card("がんばりポイント","Points");
+    const g=el("div","pbal");
+    earners().forEach(m=>{
+      const b=bal(m.id);const x=el("div","pb");
+      const a=el("span","ava",m.ini);a.style.background=m.color;if(m.sym)a.insertAdjacentHTML("beforeend",use(m.sym,null,20));x.appendChild(a);
+      const w=el("div");w.appendChild(el("b","foil",String(avail(m.id))));
+      w.appendChild(el("small",null,m.name+" のポイント"));
+      if(b.week)w.appendChild(el("small",null,"この7日 +"+b.week));
+      if(b.held)w.appendChild(el("small",null,"交換待ち "+b.held+"pt"));
+      x.appendChild(w);g.appendChild(x);
+    });
+    c.appendChild(g);return c;
+  }
+  function addForm(kind,ph){
+    const f=el("form","form");const r=el("div","row");
+    const n=el("input","in");n.placeholder=ph;n.maxLength=30;n.setAttribute("aria-label",ph);
+    const p=el("input","in");p.type="number";p.min="1";p.max="1000";p.inputMode="numeric";p.placeholder="pt";p.style.maxWidth="88px";p.setAttribute("aria-label","ポイント");
+    r.append(n,p,btn("go","追加","plus","submit"));f.appendChild(r);
+    f.addEventListener("submit",e=>{e.preventDefault();const name=n.value.trim(),pt=Math.floor(Number(p.value)||0);if(!name||pt<1||!db)return;
+      const order=(S[kind]||[]).reduce((m,i)=>Math.max(m,i.order||0),0)+1;const x={id:newId(),name:name,pt:pt,order:order};n.value="";p.value="";
+      mutate(()=>{(S[kind]=S[kind]||[]).push(x);},"api_add",[kind,x],"追加しました");});
+    return f;
+  }
+  function request(kind,item){
+    const pt=kind==="reward"?-item.pt:item.pt;
+    mutate(()=>{S.points=S.points||[];S.points.unshift({id:newId(),at:Date.now(),who:me,kind:kind,label:item.name,pt:pt,status:"pending"});
+      if(pt<0){S.balance=S.balance||{};const b=S.balance[me]||(S.balance[me]={total:0,week:0,held:0});b.held+=-pt;}},
+      "api_pointRequest",[kind,item.id],kind==="reward"?"交換を申請しました":"申請しました。承認を待ってね");
+  }
+  function decide(p,ok){
+    mutate(()=>{const x=(S.points||[]).find(y=>y.id===p.id);if(x)x.status=ok?"ok":"ng";},"api_pointDecide",[p.id,ok],ok?"承認しました":"見送りにしました");
+  }
+  function listCard(kind,jp,en){
+    const reward=kind==="rewards";
+    const c=card(jp,en,isParent()?editBtn():null);if(editing)c.classList.add("editing");
+    const my=avail(me);
+    if(isParent())c.appendChild(R("p","hint",editing?"×で削除、下の欄で追加できます":(reward?"子どもが交換を申請すると承認待ちに入ります":"子どもが「やった」を押すと承認待ちに入ります")));
+    else c.appendChild(R("p","hint",reward?"今つかえるのは "+my+"pt。交換はパパかママの承認のあとで差し引かれます":"やったら「やった」を押してね。パパかママが承認するとポイントが入ります"));
+    const list=(S[kind]||[]).slice().sort((a,b)=>(a.order||0)-(b.order||0));
+    if(!list.length)c.appendChild(R("p","empty","まだ登録がありません"));
+    const mine=(S.points||[]).filter(p=>p.who===me&&p.status==="pending"&&p.kind===(reward?"reward":"chore"));
+    list.forEach(it=>{
+      const r=el("div","prow");r.appendChild(el("div","t",it.name));r.appendChild(el("span","ptv"+(reward?" minus":""),(reward?"":"+")+it.pt+"pt"));
+      if(editing){const x=el("button","x","×");x.type="button";x.setAttribute("aria-label",it.name+"を削除");x.onclick=()=>del(kind,it.id,it.name+"を削除しました");r.appendChild(x);}
+      else if(!isParent()){
+        if(mine.some(p=>p.label===it.name))r.appendChild(R("span","wait","承認待ち"));
+        else{const b=btn("bought",reward?"交換":"やった",reward?"star":"check");if(reward&&my<it.pt)b.disabled=true;b.onclick=()=>request(reward?"reward":"chore",it);r.appendChild(b);}
+      }
+      c.appendChild(r);
+    });
+    if(isParent()&&editing)c.appendChild(addForm(kind,reward?"ごほうびの名前":"お手伝いの名前"));
+    return c;
+  }
+  function vPoints(v){
+    if(isParent()){
+      const pend=(S.points||[]).filter(p=>p.status==="pending").sort((a,b)=>a.at-b.at);
+      const c=card("承認待ち","Approvals",pend.length?el("span","tag",pend.length+"件"):null);
+      if(!pend.length)c.appendChild(R("p","empty","承認待ちはありません"));
+      pend.forEach(p=>{
+        const r=el("div","prow");r.appendChild(whoPill(p.who));
+        r.appendChild(el("div","t",p.label+(p.kind==="reward"?"(ごほうび)":"")));
+        r.appendChild(el("span","ptv"+(p.pt<0?" minus":""),ptText(p)));
+        const ok=btn("bought","承認","check");ok.onclick=()=>decide(p,true);
+        const ng=el("button","x","×");ng.type="button";ng.setAttribute("aria-label","見送り");ng.onclick=()=>decide(p,false);
+        r.append(ok,ng);c.appendChild(r);
+      });
+      v.appendChild(c);
+    }
+    v.appendChild(balCard());
+    v.insertAdjacentHTML("beforeend",DIV);
+    v.appendChild(listCard("chores","お手伝い","Chores"));
+    v.appendChild(listCard("rewards","ごほうび","Rewards"));
+    const hist=(S.points||[]).filter(p=>isParent()||p.who===me).slice(0,12);
+    if(hist.length){
+      const c=card("ポイントの記録","History");
+      hist.forEach(p=>{
+        const r=el("div","prow");if(isParent())r.appendChild(whoPill(p.who));
+        r.appendChild(el("div","t",(p.kind==="study"?"ドリル ":"")+p.label));
+        if(p.status==="pending")r.appendChild(R("span","wait","承認待ち"));
+        if(p.status==="ng")r.appendChild(R("span","wait ng","見送り"));
+        r.appendChild(el("span","ptv"+(p.pt<0?" minus":""),ptText(p)));c.appendChild(r);
+      });
+      v.appendChild(c);
+    }
+    v.insertAdjacentHTML("beforeend",DIV);
+  }
   function vStudy(v){
     if(!PROG||Date.now()-progAt>60000)loadProg();
+    vPoints(v);
     const c0=card("一問一答ドリル","Study Drill");
-    c0.appendChild(R("p","hint","中学1年の理科・社会・英語。学期ごとの単元とまとめテストで復習できます"));
+    c0.appendChild(R("p","hint","中学1年の理科・社会・英語。1問正解ごとに1ptもらえます"));
     const a=el("a","go");a.href="study.html?k="+encodeURIComponent(BOOT.token);a.innerHTML=svg("study",2.2);a.appendChild(el("span",null,"ドリルをひらく"));
     c0.appendChild(a);v.appendChild(c0);
     v.insertAdjacentHTML("beforeend",DIV);
@@ -745,6 +861,8 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     crestFlip=0;
     renderTabs();
     const v=$("view");v.textContent="";v.style.cssText="display:flex;flex-direction:column;gap:30px";
+    if(!LOADED){v.appendChild(R("p","empty","読み込み中…"));return;}
+    saveCache();
     ({home:vHome,plan:vPlan,shop:vShop,board:vBoard,study:vStudy,info:vInfo})[cur()](v);
   }
   render();
@@ -793,12 +911,20 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   }
   async function start(){
     if(!/^[a-f0-9]{32}$/.test(KEY)){noLink("リンクが途中で切れているか、古いリンクの可能性があります。");return;}
+    let cached=null;try{cached=JSON.parse(localStorage.getItem(CK)||"null");}catch(_){}
+    if(cached&&cached.me&&cached.data){me=cached.me;S=cached.data;LOADED=true;setStatus(mem(me).name+" として表示中（最新に更新中…）");render();}
     try{
       const b=await api("api_boot");
       BOOT.me=b.me;BOOT.data=b.data;
-    }catch(e){noLink((e&&e.message)||"通信できませんでした。電波のよい所でもう一度開いてください。");return;}
+    }catch(e){
+      const msg=(e&&e.message)||"";
+      if(cached&&!/リンク/.test(msg)){setStatus(mem(me).name+" として表示中（通信できないため前回の内容）");return;}
+      try{localStorage.removeItem(CK);}catch(_){}
+      LOADED=false;noLink(msg||"通信できませんでした。電波のよい所でもう一度開いてください。");return;
+    }
     me=BOOT.me;
     S=BOOT.data||S;
+    LOADED=true;
     setStatus(mem(me).name+" として表示中");
     render();
   }

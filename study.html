@@ -289,6 +289,7 @@ function finish(){
   $("sc").innerHTML=`${c}<small> / ${n}</small>`;
   const r=c/n;
   $("scMsg").textContent=r===1?"全問正解!完ぺきです。":r>=0.8?"よくできました。あと少し!":r>=0.5?"半分以上できました。間違えた所を復習しよう。":"まずは解説を読んで、もう一度やってみよう。";
+  if(c)$("scMsg").textContent+="(がんばりポイント +"+c+"pt)";
   $("retryWrong").hidden=run.wrong.length===0;
   $("mhead").hidden=run.wrong.length===0;
   $("mlist").innerHTML=run.wrong.map(id=>{const q=Q[id];return `<li>${esc(q.q)}<br>→ <span class="ans">${esc(q.a)}</span></li>`;}).join("");
