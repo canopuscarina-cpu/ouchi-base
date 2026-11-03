@@ -404,7 +404,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     ["情報","じょうほう"],["住所","じゅうしょ"],["緊急","きんきゅう"],["連絡先","れんらくさき"],["実家","じっか"],["家系図","かけいず"],["内容","ないよう"],
     ["項目","こうもく"],["警察","けいさつ"],["消防","しょうぼう"],["救急","きゅうきゅう"],["相談","そうだん"],["番号","ばんごう"],["電話","でんわ"],
     ["手伝","てつだ"],["承認","しょうにん"],["交換","こうかん"],["申請","しんせい"],["見送","みおく"],["差","さ"],["引","ひ"],["押","お"],
-    ["買","か"],["送","おく"],["家","いえ"],["先","さき"],["日","ひ"],["書","か"],["伝","つた"],["使","つか"],["開","あ"],["移","うつ"],["板","ばん"],["中","ちゅう"],["学習","がくしゅう"],["問題数","もんだいすう"],["問題","もんだい"],["正答率","せいとうりつ"],["苦手","にがて"],["記録","きろく"],["単元","たんげん"],["教科別","きょうかべつ"],["連続","れんぞく"],["理科","りか"],["社会","しゃかい"],["英語","えいご"],["中学","ちゅうがく"],["復習","ふくしゅう"],["直近","ちょっきん"],["合計","ごうけい"],["記念日","きねんび"],["毎年","まいとし"],["誕生日","たんじょうび"],["祝日","しゅくじつ"],["運動会","うんどうかい"]];
+    ["買","か"],["送","おく"],["家","いえ"],["先","さき"],["日","ひ"],["書","か"],["伝","つた"],["使","つか"],["開","あ"],["移","うつ"],["板","ばん"],["中","ちゅう"],["学習","がくしゅう"],["問題数","もんだいすう"],["問題","もんだい"],["正答率","せいとうりつ"],["苦手","にがて"],["記録","きろく"],["単元","たんげん"],["教科別","きょうかべつ"],["連続","れんぞく"],["理科","りか"],["社会","しゃかい"],["英語","えいご"],["中学","ちゅうがく"],["復習","ふくしゅう"],["直近","ちょっきん"],["合計","ごうけい"],["数学","すうがく"],["記念日","きねんび"],["毎年","まいとし"],["誕生日","たんじょうび"],["祝日","しゅくじつ"],["運動会","うんどうかい"]];
   RUBY.sort((a,b)=>b[0].length-a[0].length);
   const RX=new RegExp(RUBY.map(r=>r[0]).join("|"),"g");
   const RMAP=Object.fromEntries(RUBY);
@@ -728,7 +728,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
 
   /* ---------- 学習 ---------- */
   let PROG=null,progAt=0,progLoading=false;
-  const SUBJ={rika:["理科","var(--leaf)"],shakai:["社会","var(--gold)"],eigo:["英語","var(--ai)"],kana:["ひらがな","var(--ume)"],kazu:["かず","var(--ai)"],tokei:["とけい","var(--fuji)"]};
+  const SUBJ={rika:["理科","var(--leaf)"],shakai:["社会","var(--gold)"],eigo:["英語","var(--ai)"],sugaku:["数学","var(--ume-lo)"],kana:["ひらがな","var(--ume)"],kazu:["かず","var(--ai)"],tokei:["とけい","var(--fuji)"]};
   const KIDS_URL="kids.html";
   const pct=(c,n)=>n?Math.round(c/n*100):0;
   async function loadProg(){
@@ -759,7 +759,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
       c.appendChild(r);
     });
     const mc=p.missCount||{};
-    if((mc.rika||0)+(mc.shakai||0)+(mc.eigo||0))c.appendChild(el("p","misses","苦手リストに残っている問題:理科 "+(mc.rika||0)+"問・社会 "+(mc.shakai||0)+"問・英語 "+(mc.eigo||0)+"問"));
+    if((mc.rika||0)+(mc.shakai||0)+(mc.eigo||0)+(mc.sugaku||0))c.appendChild(el("p","misses","苦手リストに残っている問題:理科 "+(mc.rika||0)+"問・社会 "+(mc.shakai||0)+"問・英語 "+(mc.eigo||0)+"問・数学 "+(mc.sugaku||0)+"問"));
 
     if(p.weak&&p.weak.length){
       c.appendChild(R("h3","sub-h","つまずいている単元"));
@@ -887,7 +887,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     vPoints(v);
     if(me!=="mitsuha"){
       const c0=card("一問一答ドリル","Study Drill");
-      c0.appendChild(R("p","hint","中学1年の理科・社会・英語。1問正解ごとに1ptもらえます"));
+      c0.appendChild(R("p","hint","中学1年の理科・社会・英語・数学。1問正解ごとに1ptもらえます"));
       const a=el("a","go");a.href="study.html?k="+encodeURIComponent(BOOT.token);a.innerHTML=svg("study",2.2);a.appendChild(el("span",null,"ドリルをひらく"));
       c0.appendChild(a);v.appendChild(c0);
     }

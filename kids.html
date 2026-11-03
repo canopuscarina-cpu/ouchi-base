@@ -91,6 +91,12 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--wine);color:var(--gold-hi);border:1px solid var(--gold);padding:8px 18px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;z-index:6}
 .toast.show{opacity:1}
 @media (prefers-reduced-motion: reduce){.toast{transition:none}}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mode{border:0;border-radius:18px;padding:14px 10px;font-weight:900;font-size:18px;color:#fff7e4;background:radial-gradient(120% 140% at 30% 0%,var(--wine2),var(--wine));box-shadow:inset 0 0 0 2px var(--gold);display:flex;flex-direction:column;align-items:center;gap:2px}
+.mode span{font-size:28px;line-height:1.2}
+.mode small{font-size:12px;font-weight:700;color:var(--gold-hi)}
+.timer{flex:1;text-align:right;font-weight:900;font-size:20px;color:var(--ume-lo);font-variant-numeric:tabular-nums}
+.big.word{font-size:34px;letter-spacing:.02em}
 </style>
 <script>
 (function(){var q=(location.search.match(/[?&]season=(\w+)/)||[])[1];var m=new Date().getMonth()+1;
@@ -142,18 +148,31 @@ try{
 
 /* ---------- よみあげ ---------- */
 let voiceOn=true;try{voiceOn=localStorage.getItem("kids_voice")!=="off";}catch(_){}
-function say(text){
+function say(text,lang){
   if(!voiceOn||!("speechSynthesis" in window)||!text)return;
-  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="ja-JP";u.rate=0.85;
-    const v=speechSynthesis.getVoices().find(v=>/^ja/.test(v.lang));if(v)u.voice=v;speechSynthesis.speak(u);}catch(_){}
+  lang=lang||"ja-JP";
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=lang==="ja-JP"?0.85:0.8;
+    const v=speechSynthesis.getVoices().find(v=>v.lang.replace("_","-").startsWith(lang.slice(0,2)));if(v)u.voice=v;speechSynthesis.speak(u);}catch(_){}
 }
 
 /* ---------- もんだい ---------- */
 const HIRA="あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん".split("");
 const KATA="アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン".split("");
-const WORDS=[["🍎","りんご"],["🍊","みかん"],["🍓","いちご"],["🍌","ばなな"],["🍇","ぶどう"],["🍉","すいか"],["🍑","もも"],["🍅","とまと"],["🥕","にんじん"],["🍙","おにぎり"],["🍞","ぱん"],
-  ["🐶","いぬ"],["🐱","ねこ"],["🐰","うさぎ"],["🐘","ぞう"],["🐟","さかな"],["🐻","くま"],["🐢","かめ"],["🦒","きりん"],["🐼","ぱんだ"],["🦊","きつね"],["🐒","さる"],["🐸","かえる"],["🐝","はち"],["🐙","たこ"],["🦀","かに"],
-  ["🚗","くるま"],["🚃","でんしゃ"],["✈️","ひこうき"],["🌸","さくら"],["🌻","ひまわり"],["☀️","たいよう"],["🌙","つき"],["⭐","ほし"],["🎈","ふうせん"],["🏠","いえ"],["🌂","かさ"],["👓","めがね"]];
+const WORDS=[["🍎","りんご"],["🍊","みかん"],["🍓","いちご"],["🍇","ぶどう"],["🍉","すいか"],["🍑","もも"],["🍙","おにぎり"],["🍆","なす"],["🌽","とうもろこし"],["🥒","きゅうり"],["🍡","だんご"],["🍵","おちゃ"],
+  ["🐶","いぬ"],["🐱","ねこ"],["🐰","うさぎ"],["🐘","ぞう"],["🐟","さかな"],["🐻","くま"],["🐢","かめ"],["🦒","きりん"],["🦊","きつね"],["🐒","さる"],["🐸","かえる"],["🐝","はち"],["🐙","たこ"],["🦀","かに"],
+  ["🐭","ねずみ"],["🐮","うし"],["🐷","ぶた"],["🐔","にわとり"],["🦆","あひる"],["🐍","へび"],["🐌","かたつむり"],["🦉","ふくろう"],["🦋","ちょう"],["🐞","てんとうむし"],
+  ["🚗","くるま"],["🚃","でんしゃ"],["✈️","ひこうき"],["🚲","じてんしゃ"],["🚒","しょうぼうしゃ"],["🚑","きゅうきゅうしゃ"],
+  ["🌸","さくら"],["🌻","ひまわり"],["☀️","たいよう"],["🌙","つき"],["⭐","ほし"],["🌈","にじ"],["☁️","くも"],["❄️","ゆき"],["☔","あめ"],
+  ["🎈","ふうせん"],["🏠","いえ"],["🌂","かさ"],["👓","めがね"],["✏️","えんぴつ"],["✂️","はさみ"],["🔑","かぎ"],["📕","ほん"],["👀","め"],["👂","みみ"],["✋","て"]];
+const KWORDS=[["🍌","バナナ"],["🍰","ケーキ"],["🦁","ライオン"],["🐧","ペンギン"],["🍕","ピザ"],["⚽","ボール"],["📺","テレビ"],["🎹","ピアノ"],["🚌","バス"],["🍅","トマト"],
+  ["🍈","メロン"],["🍋","レモン"],["🥛","ミルク"],["🍫","チョコ"],["🍔","ハンバーガー"],["🦍","ゴリラ"],["🐨","コアラ"],["🚀","ロケット"],["🎸","ギター"],["🍦","アイス"],
+  ["🍞","パン"],["🚕","タクシー"],["🦩","フラミンゴ"],["🍝","スパゲッティ"],["🥕","ニンジン"],["🎂","バースデーケーキ"],["🐼","パンダ"],["🍩","ドーナツ"]];
+const DAKU="がぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ".split("");
+const COLORS=[["あか",["🍎","🍓","🍅","🚒","🌹"]],["きいろ",["🍌","🌻","🍋","🐥","🌙"]],["みどり",["🐸","🥦","🍀","🥒","🌲"]],["あお",["💧","🐳","🫐","🚙","🌊"]],
+  ["むらさき",["🍇","🍆","🔮","☂️"]],["しろ",["☁️","❄️","🍚","🥚"]],["ちゃいろ",["🍫","🐻","🌰","🥔"]],["くろ",["🎱","🐈‍⬛","🎩"]]];
+const SHAPES=[["まる","⚪"],["さんかく","🔺"],["しかく","⬛"],["ほし","⭐"],["はーと","❤️"],["ひしがた","🔷"]];
+const EN=[["🍎","apple"],["🐶","dog"],["🐱","cat"],["🍌","banana"],["🚗","car"],["⭐","star"],["🐟","fish"],["🐦","bird"],["☀️","sun"],["🌙","moon"],["🌸","flower"],["🥚","egg"],["🥛","milk"],["🚌","bus"],["⚽","ball"],["📕","book"],["🍰","cake"],["🏠","house"],["🐻","bear"],["🍊","orange"]];
+const ENUM=["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
 const COUNT_EMO=["🍎","🍓","⭐","🐟","🌸","🍙","🎈","🐸"];
 function choicesFrom(ans,pool,n){const s=new Set([ans]);const p=shuffle(pool);for(const x of p){if(s.size>=(n||4))break;s.add(x);}return shuffle([...s]);}
 function numChoices(ans,lo,hi){const s=new Set([ans]);const near=shuffle([ans-2,ans-1,ans+1,ans+2,ans+3,ans-3]).filter(x=>x>=lo&&x<=hi);for(const x of near){if(s.size>=4)break;s.add(x);}while(s.size<4)s.add(rnd(lo,hi));return shuffle([...s].map(String));}
@@ -165,23 +184,40 @@ function clockSvg(h,m){
   return s+hand(ha,46,9,"var(--ume-lo)")+hand(ma,68,5,"var(--ai)")+'<circle cx="100" cy="100" r="7" fill="var(--wine)"/></svg>';
 }
 const tLabel=(h,m)=>h+"じ"+(m?"はん":"");
+const tMin=(h,m)=>h+"じ"+(m===0?"":m+([2,5,7,9].includes(m%10)?"ふん":"ぷん"));
 const UNITS=[
   {cat:"ひらがな",icon:"🌸",subj:"kana",list:[
     {id:"k-moji",name:"もじ さがし",sub:"よまれた もじは どれ？",gen(){const a=pick(HIRA);return {kind:"text",big:"「"+a+"」",q:"「"+a+"」は どれ？",speak:a+"、は どれ？",ans:a,ch:choicesFrom(a,HIRA)};}},
-    {id:"k-kotoba",name:"ことば",sub:"えを みて こたえよう",gen(){const w=pick(WORDS);return {kind:"emo",big:w[0],q:"これは なに？",speak:"これは なに？",ans:w[1],ch:choicesFrom(w[1],WORDS.map(x=>x[1])),small:true};}}]},
+    {id:"k-daku",name:"てん・まる",sub:"が・ぱ の なかま",gen(){const a=pick(DAKU);return {kind:"text",big:"「"+a+"」",q:"「"+a+"」は どれ？",speak:a+"、は どれ？",ans:a,ch:choicesFrom(a,DAKU)};}},
+    {id:"k-kotoba",name:"ことば",sub:"えを みて こたえよう",gen(){const w=pick(WORDS);return {kind:"emo",big:w[0],q:"これは なに？",speak:"これは なに？",ans:w[1],ch:choicesFrom(w[1],WORDS.map(x=>x[1])),small:true};}},
+    {id:"k-first",name:"さいしょの もじ",sub:"なんの もじから？",gen(){const w=pick(WORDS);const a=w[1][0];return {kind:"emo",big:w[0],q:"さいしょの もじは？",speak:"さいしょの もじは？",ans:a,ch:choicesFrom(a,[...new Set(WORDS.map(x=>x[1][0]))])};}}]},
   {cat:"カタカナ",icon:"🍀",subj:"kana",list:[
     {id:"k-kata1",name:"カタカナ → ひらがな",sub:"おなじ おとは どれ？",gen(){const i=rnd(0,45);return {kind:"text",big:KATA[i],q:"「"+KATA[i]+"」は ひらがなで どれ？",speak:HIRA[i]+"、は ひらがなで どれ？",ans:HIRA[i],ch:choicesFrom(HIRA[i],HIRA)};}},
-    {id:"k-kata2",name:"ひらがな → カタカナ",sub:"カタカナで かくと？",gen(){const i=rnd(0,45);return {kind:"text",big:HIRA[i],q:"「"+HIRA[i]+"」は カタカナで どれ？",speak:HIRA[i]+"、は カタカナで どれ？",ans:KATA[i],ch:choicesFrom(KATA[i],KATA)};}}]},
+    {id:"k-kata2",name:"ひらがな → カタカナ",sub:"カタカナで かくと？",gen(){const i=rnd(0,45);return {kind:"text",big:HIRA[i],q:"「"+HIRA[i]+"」は カタカナで どれ？",speak:HIRA[i]+"、は カタカナで どれ？",ans:KATA[i],ch:choicesFrom(KATA[i],KATA)};}},
+    {id:"k-kword",name:"カタカナの ことば",sub:"えを みて こたえよう",gen(){const w=pick(KWORDS);return {kind:"emo",big:w[0],q:"これは なに？",speak:"これは なに？",ans:w[1],ch:choicesFrom(w[1],KWORDS.map(x=>x[1])),small:true};}}]},
   {cat:"かず",icon:"🍓",subj:"kazu",list:[
     {id:"z-count",name:"かぞえよう",sub:"いくつ あるかな？",gen(){const n=rnd(1,10),e=pick(COUNT_EMO);return {kind:"many",big:e.repeat(n),q:"いくつ ある？",speak:"いくつ ある？",ans:String(n),ch:numChoices(n,1,10)};}},
+    {id:"z-cmp",name:"どっちが おおきい",sub:"かずを くらべよう",gen(){let a=rnd(1,20),b=rnd(1,20);while(b===a)b=rnd(1,20);const big=String(Math.max(a,b));return {kind:"text",big:a+" と "+b,q:"おおきいのは どっち？",speak:a+"と"+b+"、おおきいのは どっち？",ans:big,ch:[String(a),String(b)]};}},
+    {id:"z-ten",name:"あと いくつで 10",sub:"10の まとまり",gen(){const n=rnd(1,9);return {kind:"many",big:"🍓".repeat(n)+"⚪".repeat(10-n),q:n+" と いくつで 10？",speak:n+"と、いくつで、じゅう？",ans:String(10-n),ch:numChoices(10-n,1,9)};}},
     {id:"z-add",name:"たしざん",sub:"10まで",gen(){const a=rnd(1,9),b=rnd(1,10-a);return {kind:"text",big:a+" ＋ "+b,q:a+" たす "+b+" は？",speak:a+" たす "+b+" は？",ans:String(a+b),ch:numChoices(a+b,1,10)};}},
     {id:"z-sub",name:"ひきざん",sub:"10まで",gen(){const a=rnd(2,10),b=rnd(1,a-1);return {kind:"text",big:a+" − "+b,q:a+" ひく "+b+" は？",speak:a+" ひく "+b+" は？",ans:String(a-b),ch:numChoices(a-b,0,9)};}},
-    {id:"z-carry",name:"くりあがり",sub:"20まで の たしざん",gen(){const a=rnd(2,9),b=rnd(11-a,9);return {kind:"text",big:a+" ＋ "+b,q:a+" たす "+b+" は？",speak:a+" たす "+b+" は？",ans:String(a+b),ch:numChoices(a+b,10,18)};}}]},
+    {id:"z-carry",name:"くりあがり",sub:"20まで の たしざん",gen(){const a=rnd(2,9),b=rnd(11-a,9);return {kind:"text",big:a+" ＋ "+b,q:a+" たす "+b+" は？",speak:a+" たす "+b+" は？",ans:String(a+b),ch:numChoices(a+b,10,18)};}},
+    {id:"z-borrow",name:"くりさがり",sub:"20まで の ひきざん",gen(){const a=rnd(11,18),b=rnd(a-9,9);return {kind:"text",big:a+" − "+b,q:a+" ひく "+b+" は？",speak:a+" ひく "+b+" は？",ans:String(a-b),ch:numChoices(a-b,2,9)};}},
+    {id:"z-seq",name:"かずの ならび",sub:"□に はいる かずは？",gen(){const st=pick([1,1,2,5,10]),down=st<=2&&Math.random()<0.3;const len=4;let a0=down?rnd(st*len,st*len+10):rnd(0,st===10?50:st===5?20:12);
+      const seq=[];for(let i=0;i<len;i++)seq.push(down?a0-st*i:a0+st*i);const hole=rnd(1,len-1);const ans=seq[hole];const shown=seq.map((v,i)=>i===hole?"□":String(v)).join("、");
+      return {kind:"text",big:shown,q:"□に はいる かずは？",speak:"しかくに はいる かずは？",ans:String(ans),ch:numChoices(ans,Math.max(0,ans-12),ans+12),word:true};}}]},
   {cat:"とけい",icon:"⏰",subj:"tokei",list:[
     {id:"t-hour",name:"なんじ？",sub:"ちょうどの じかん",gen(){const h=rnd(1,12);const ans=tLabel(h,0);const pool=[];for(let i=1;i<=12;i++)pool.push(tLabel(i,0));return {kind:"clock",h,m:0,q:"なんじ？",speak:"なんじ？",ans,ch:choicesFrom(ans,pool),small:true};}},
-    {id:"t-half",name:"なんじはん？",sub:"はんも あるよ",gen(){const h=rnd(1,12),m=pick([0,30]);const ans=tLabel(h,m);const n=h%12+1,p=(h+10)%12+1;const s=new Set([ans,tLabel(h,m?0:30),tLabel(n,m),tLabel(p,30)]);while(s.size<4)s.add(tLabel(rnd(1,12),pick([0,30])));return {kind:"clock",h,m,q:"なんじ？",speak:"なんじ？",ans,ch:shuffle([...s]),small:true};}}]}
+    {id:"t-half",name:"なんじはん？",sub:"はんも あるよ",gen(){const h=rnd(1,12),m=pick([0,30]);const ans=tLabel(h,m);const n=h%12+1,p=(h+10)%12+1;const s=new Set([ans,tLabel(h,m?0:30),tLabel(n,m),tLabel(p,30)]);while(s.size<4)s.add(tLabel(rnd(1,12),pick([0,30])));return {kind:"clock",h,m,q:"なんじ？",speak:"なんじ？",ans,ch:shuffle([...s]),small:true};}},
+    {id:"t-min",name:"なんじ なんぷん？",sub:"5ふん きざみ",gen(){const h=rnd(1,12),m=rnd(1,11)*5;const ans=tMin(h,m);const s=new Set([ans,tMin(h,m/5),tMin(h%12+1,m),tMin(h,(m+30)%60||5)]);while(s.size<4)s.add(tMin(rnd(1,12),rnd(1,11)*5));return {kind:"clock",h,m,q:"なんじ なんぷん？",speak:"なんじ なんぷん？",ans,ch:shuffle([ans,...[...s].filter(x=>x!==ans).slice(0,3)]),small:true};}}]},
+  {cat:"いろ・かたち",icon:"🎨",subj:"kazu",list:[
+    {id:"c-color",subj:"kana",name:"なにいろ？",sub:"いろの なまえ",gen(){const c=pick(COLORS);const e=pick(c[1]);return {kind:"emo",big:e,q:"なにいろ？",speak:"なにいろ？",ans:c[0],ch:choicesFrom(c[0],COLORS.map(x=>x[0])),small:true};}},
+    {id:"c-shape",name:"かたち",sub:"まる・さんかく・しかく",gen(){const s=pick(SHAPES);return {kind:"emo",big:s[1],q:"この かたちは？",speak:"この かたちは？",ans:s[0],ch:choicesFrom(s[0],SHAPES.map(x=>x[0])),small:true};}}]},
+  {cat:"えいご",icon:"🔤",subj:"eigo",list:[
+    {id:"g-word",name:"えいごの ことば",sub:"えを みて えらぼう",gen(){const w=pick(EN);return {kind:"emo",big:w[0],q:"えいごで いうと？",speak:"えいごで いうと？",ans:w[1],ch:choicesFrom(w[1],EN.map(x=>x[1])),small:true,en:true};}},
+    {id:"g-num",name:"えいごの かず",sub:"one, two, three",gen(){const n=rnd(1,10);return {kind:"text",big:String(n),q:n+" は えいごで？",speak:n+"、は えいごで？",ans:ENUM[n],ch:choicesFrom(ENUM[n],ENUM.slice(1)),small:true,en:true};}}]}
 ];
-const UNIT_BY_ID={};UNITS.forEach(c=>c.list.forEach(u=>{u.subj=c.subj;u.cat=c.cat;UNIT_BY_ID[u.id]=u;}));
+const UNIT_BY_ID={};UNITS.forEach(c=>c.list.forEach(u=>{u.subj=u.subj||c.subj;u.cat=c.cat;UNIT_BY_ID[u.id]=u;}));
 
 /* ---------- がめん ---------- */
 let todayPt=0;
@@ -190,6 +226,11 @@ function renderHome(){
   const h=$("home");h.textContent="";
   const hi=el("p","hello");hi.textContent=BOOT.name+"、きょうも がんばろう！";const sm=el("small",null,"1もん せいかいで 1ポイント");hi.appendChild(sm);h.appendChild(hi);
   const wrap=el("div");wrap.style.cssText="display:flex;flex-direction:column;gap:14px";
+  const md=el("div","modes");
+  const bm=el("button","mode");bm.type="button";bm.appendChild(el("span",null,"🎲"));bm.appendChild(document.createTextNode("ミックス"));bm.appendChild(el("small",null,"いろんな もんだい 10もん"));bm.onclick=()=>startMix();
+  const bt=el("button","mode");bt.type="button";bt.appendChild(el("span",null,"⏱"));bt.appendChild(document.createTextNode("タイムアタック"));
+  const tb=(BOOT.state.best||{})["k-time"];bt.appendChild(el("small",null,tb?"さいこう "+tb.c+"もん":"60びょうで なんもん？"));bt.onclick=()=>startTime();
+  md.append(bm,bt);wrap.appendChild(md);
   UNITS.forEach(c=>{
     const box=el("div","cat");const t=el("h2");t.appendChild(el("span",null,c.icon));t.appendChild(document.createTextNode(c.cat));box.appendChild(t);
     const g=el("div","units");
@@ -202,16 +243,26 @@ function renderHome(){
   tg.appendChild(cb);tg.appendChild(document.createTextNode("もんだいを よみあげる"));wrap.appendChild(tg);
   h.appendChild(wrap);
 }
-let run=null;
-function start(u){run={u,items:Array.from({length:10},()=>u.gen()),i:0,correct:0,marks:[]};show("quiz");renderQ();}
+let run=null,timer=null;
+const ALLU=[];UNITS.forEach(c=>c.list.forEach(u=>ALLU.push(u)));
+const mk=u=>Object.assign(u.gen(),{u});
+function begin(o){clearInterval(timer);run=Object.assign({i:0,correct:0,marks:[],sent:{}},o);show("quiz");
+  if(run.mode==="time")run.end=Date.now()+60000;
+  renderQ();if(run.mode==="time")timer=setInterval(tick,250);}
+function start(u){begin({mode:"unit",u,items:Array.from({length:10},()=>mk(u))});}
+function startMix(){begin({mode:"mix",items:Array.from({length:10},()=>mk(pick(ALLU)))});}
+function startTime(){begin({mode:"time",items:[mk(pick(ALLU))]});}
+function tick(){if(!run||run.mode!=="time")return;const left=Math.max(0,Math.ceil((run.end-Date.now())/1000));const tm=$("dots");tm.textContent="";tm.appendChild(el("div","timer","のこり "+left+"びょう ・ "+run.correct+"もん"));if(left<=0&&!$("quiz").hidden){clearInterval(timer);finish();}}
 function renderQ(){
   const it=run.items[run.i];
-  const dots=$("dots");dots.textContent="";for(let k=0;k<run.items.length;k++){const d=el("i");if(run.marks[k])d.className=run.marks[k];if(k===run.i)d.classList.add("now");dots.appendChild(d);}
+  const dots=$("dots");dots.textContent="";
+  if(run.mode==="time")tick();
+  else for(let k=0;k<run.items.length;k++){const d=el("i");if(run.marks[k])d.className=run.marks[k];if(k===run.i)d.classList.add("now");dots.appendChild(d);}
   const qc=$("qcard");qc.textContent="";
   const sb=el("button","say","🔊");sb.type="button";sb.setAttribute("aria-label","もういちど きく");sb.onclick=()=>say(it.speak);qc.appendChild(sb);
   qc.appendChild(el("p","qtext",it.q));
   if(it.kind==="clock")qc.insertAdjacentHTML("beforeend",clockSvg(it.h,it.m));
-  else{const b=el("div","big"+(it.kind==="emo"?" emo":it.kind==="many"?" many":""),it.big);qc.appendChild(b);}
+  else{const b=el("div","big"+(it.word?" word":it.kind==="emo"?" emo":it.kind==="many"?" many":""),it.big);qc.appendChild(b);}
   const ch=$("choices");ch.textContent="";
   it.ch.forEach(c=>{const b=el("button","ch"+(it.small||String(c).length>3?" small":""),c);b.type="button";b.onclick=()=>answer(b,c);ch.appendChild(b);});
   $("fb").hidden=true;$("nextBtn").hidden=true;
@@ -223,24 +274,30 @@ function answer(btn,c){
   [...$("choices").children].forEach(b=>{b.disabled=true;if(b.textContent===it.ans)b.classList.add("ok");else if(b===btn)b.classList.add("ng");});
   const fb=$("fb");fb.className="fb "+(ok?"ok":"ng");fb.textContent=ok?"🌸 せいかい！":"ざんねん…";
   if(!ok)fb.appendChild(el("small",null,"こたえは「"+it.ans+"」"));fb.hidden=false;
-  say(ok?"せいかい！":"ざんねん。こたえは、"+(it.kind==="clock"?it.ans:it.ans));
+  if(it.en)say(it.ans,"en-US");else if(run.mode!=="time")say(ok?"せいかい！":"ざんねん。こたえは、"+it.ans);
+  if(run.mode==="time"){const r0=run;setTimeout(()=>{if(run!==r0||$("quiz").hidden||Date.now()>=run.end)return;run.items.push(mk(pick(ALLU)));run.i++;renderQ();},ok?500:1200);return;}
   const nb=$("nextBtn");nb.textContent=run.i+1<run.items.length?"つぎへ ▶":"けっかを みる ▶";nb.hidden=false;
   nb.scrollIntoView({block:"nearest",behavior:"smooth"});
 }
 $("nextBtn").onclick=()=>{run.i++;if(run.i<run.items.length)renderQ();else finish();};
-$("quitBtn").onclick=()=>{save(false);renderHome();show("home");};
-$("againBtn").onclick=()=>start(run.u);
+$("quitBtn").onclick=()=>{clearInterval(timer);save(false);renderHome();show("home");};
+$("againBtn").onclick=()=>{run.mode==="unit"?start(run.u):run.mode==="mix"?startMix():startTime();};
 $("menuBtn").onclick=()=>{renderHome();show("home");};
 
 /* ---------- きろく ---------- */
 function save(final){
   if(!run)return;
-  const n=run.marks.filter(Boolean).length,c=run.marks.filter(x=>x==="ok").length;
-  if(final&&n){const b=(BOOT.state.best=BOOT.state.best||{})[run.u.id];if(!b||c/n>b.c/b.n||(c/n===b.c/b.n&&n>b.n))BOOT.state.best[run.u.id]={c,n};}
-  const dn=n-(run.sn||0),dc=c-(run.sc||0);if(dn<=0)return;
-  run.sn=n;run.sc=c;todayPt+=dc;setPt();
-  const rec={subj:run.u.subj,term:0,unitId:run.u.id,unitName:run.u.cat+" "+run.u.name,mode:"unit",correct:dc,total:dn,wrong:[],best:BOOT.state.best||{},miss:BOOT.state.miss||{}};
-  queue.push(rec);flush();
+  const by={};let n=0,c=0;
+  run.marks.forEach((m,k)=>{if(!m)return;const s=run.items[k].u.subj;const g=by[s]||(by[s]={n:0,c:0});g.n++;n++;if(m==="ok"){g.c++;c++;}});
+  const key=run.mode==="unit"?run.u.id:run.mode==="mix"?"k-mix":"k-time";
+  if(final&&n){const best=(BOOT.state.best=BOOT.state.best||{});const b=best[key];
+    if(run.mode==="time"){if(!b||c>b.c)best[key]={c,n};}
+    else if(!b||c/n>b.c/b.n||(c/n===b.c/b.n&&n>b.n))best[key]={c,n};}
+  const name=run.mode==="unit"?run.u.cat+" "+run.u.name:run.mode==="mix"?"ミックス":"タイムアタック";
+  Object.keys(by).forEach(s=>{const sent=run.sent[s]||{n:0,c:0};const dn=by[s].n-sent.n,dc=by[s].c-sent.c;if(dn<=0)return;
+    run.sent[s]={n:by[s].n,c:by[s].c};todayPt+=dc;
+    queue.push({subj:s,term:0,unitId:key,unitName:name,mode:"unit",correct:dc,total:dn,wrong:[],best:BOOT.state.best||{},miss:BOOT.state.miss||{}});});
+  setPt();flush();
 }
 const queue=[];let sending=false;
 function flush(){
@@ -251,13 +308,20 @@ function flush(){
 }
 document.addEventListener("visibilitychange",()=>{if(document.hidden){if(run&&!$("quiz").hidden)save(false);}else flush();});
 function finish(){
-  const n=run.items.length,c=run.correct;save(true);
+  clearInterval(timer);
+  const n=run.marks.filter(Boolean).length,c=run.correct;save(true);
   const box=$("resBox");box.textContent="";
-  box.appendChild(el("div","stars",c===n?"🌸🌸🌸":c>=7?"🌸🌸":c>=4?"🌸":"🍀"));
-  const sc=el("div","score",String(c));sc.appendChild(el("small",null," / "+n));box.appendChild(sc);
-  box.appendChild(el("div",null,c===n?"ぜんもん せいかい！すごい！":c>=7?"よく できたね！":c>=4?"その ちょうし！":"つぎは きっと できるよ！"));
+  if(run.mode==="time"){
+    box.appendChild(el("div","stars",c>=20?"🌸🌸🌸":c>=12?"🌸🌸":c>=5?"🌸":"🍀"));
+    const sc=el("div","score",String(c));sc.appendChild(el("small",null," もん"));box.appendChild(sc);
+    box.appendChild(el("div",null,"60びょうで "+c+"もん せいかい！"+(n>c?"（"+n+"もん ちょうせん）":"")));
+  }else{
+    box.appendChild(el("div","stars",c===n?"🌸🌸🌸":c>=7?"🌸🌸":c>=4?"🌸":"🍀"));
+    const sc=el("div","score",String(c));sc.appendChild(el("small",null," / "+n));box.appendChild(sc);
+    box.appendChild(el("div",null,c===n?"ぜんもん せいかい！すごい！":c>=7?"よく できたね！":c>=4?"その ちょうし！":"つぎは きっと できるよ！"));
+  }
   if(c)box.appendChild(el("div","gain","がんばりポイント +"+c+"pt"));
-  say(c===n?"ぜんもん せいかい！すごい！":c+"もん せいかい！");
+  say(run.mode!=="time"&&c===n?"ぜんもん せいかい！すごい！":c+"もん せいかい！");
   show("result");
 }
 renderHome();show("home");
