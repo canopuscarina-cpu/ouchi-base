@@ -464,6 +464,16 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
   const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   const rb=s=>esc(s).replace(RX,m=>"<ruby>"+m+"<rt>"+RMAP[m]+"</rt></ruby>");
   const R=(tag,cls,s)=>{const e=el(tag,cls);e.innerHTML=rb(s);return e;};
+  /* 光葉の画面だけ、お手伝い・ごほうびの名前にもふりがな（長いことばから順に当てる） */
+  const IRUBY=[["2人","ふたり"],["1本","いっぽん"],["靴下","くつした"],["絵本","えほん"],["風呂","ふろ"],["延長","えんちょう"],["追加","ついか"],["公園","こうえん"],["家族","かぞく"],["映画","えいが"],["出前","でまえ"],
+    ["玄関","げんかん"],["片付","かたづ"],["食卓","しょくたく"],["植物","しょくぶつ"],["自分","じぶん"],["食器","しょっき"],["明日","あした"],["準備","じゅんび"],["洗濯","せんたく"],["新聞","しんぶん"],["郵便","ゆうびん"],
+    ["分別","ぶんべつ"],["部屋","へや"],["勉強","べんきょう"],["宿題","しゅくだい"],["音読","おんどく"],["お菓子","おかし"],
+    ["好","す"],["読","よ"],["遊","あそ"],["寝","ね"],["前","まえ"],["話","はなし"],["分","ぷん"],["回","かい"],["枚","まい"],["冊","さつ"],["選","えら"],["買","か"],["小","ちい"],
+    ["観","み"],["決","き"],["先","さき"],["日","ひ"],["夕","ゆう"],["靴","くつ"],["並","なら"],["水","みず"],["流","なが"],["運","はこ"],["着","き"],["入","い"],["外","はず"],["箱","ばこ"],["集","あつ"],
+    ["取","と"],["米","こめ"],["机","つくえ"],["上","うえ"],["言","い"]];
+  IRUBY.sort((a,b)=>b[0].length-a[0].length);
+  const IRX=new RegExp(IRUBY.map(r=>r[0]).join("|"),"g"),IMAP=Object.fromEntries(IRUBY);
+  const nameEl=(cls,s)=>{const e=el("div",cls);if(me==="mitsuha")e.innerHTML=esc(String(s)).replace(IRX,m=>"<ruby>"+m+"<rt>"+IMAP[m]+"</rt></ruby>");else e.textContent=s;return e;};
 
   const MEMBERS=[
     {id:"papa",name:"パパ",ini:"パ",color:"var(--ai)"},
@@ -908,7 +918,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     if(!list.length)c.appendChild(R("p","empty","まだ登録がありません"));
     const mine=(S.points||[]).filter(p=>p.who===me&&p.status==="pending"&&p.kind===(reward?"reward":"chore"));
     list.forEach(it=>{
-      const r=el("div","prow");const tt=el("div","t",it.name);
+      const r=el("div","prow");const tt=nameEl("t",it.name);
       if(isParent())(it.for?String(it.for).split(","):["all"]).forEach(id=>tt.appendChild(whoPill(id)));
       r.appendChild(tt);r.appendChild(el("span","ptv"+(reward?" minus":""),(reward?"":"+")+it.pt+"pt"));
       if(editing){const x=el("button","x","×");x.type="button";x.setAttribute("aria-label",it.name+"を削除");x.onclick=()=>del(kind,it.id,it.name+"を削除しました");r.appendChild(x);}
@@ -945,7 +955,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
       const c=card("ポイントの記録","History");
       hist.forEach(p=>{
         const r=el("div","prow");if(isParent())r.appendChild(whoPill(p.who));
-        r.appendChild(el("div","t",(p.kind==="study"?"ドリル ":"")+p.label));
+        r.appendChild(nameEl("t",(p.kind==="study"?"ドリル ":"")+p.label));
         if(p.status==="pending")r.appendChild(R("span","wait","承認待ち"));
         if(p.status==="ng")r.appendChild(R("span","wait ng","見送り"));
         r.appendChild(el("span","ptv"+(p.pt<0?" minus":""),ptText(p)));c.appendChild(r);
