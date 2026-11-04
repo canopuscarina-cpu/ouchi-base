@@ -275,6 +275,13 @@ a.go{text-decoration:none}
 .hol{font-size:11px;font-weight:700;color:var(--gold-lo);border:1px solid var(--gold);border-radius:999px;padding:0 8px;margin-left:6px;vertical-align:1px}
 .yr{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;white-space:nowrap}
 .yr input{width:20px;height:20px;accent-color:var(--wine)}
+.step{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px dashed var(--hair)}
+.step .no{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--latin);font-weight:600;font-size:18px;color:var(--gold-hi);background:radial-gradient(120% 140% at 30% 0%,var(--wine2),var(--wine));box-shadow:0 0 0 1.5px var(--gold)}
+.step .sb{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.step .sb b{font-weight:700}
+.step .val{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.8}
+.step .sacts{display:flex;gap:6px;flex:none}
+.step .form{margin:0;padding:0;border:0;width:100%}
 
 /* album */
 .vh{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
@@ -1000,6 +1007,47 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
     a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
     a.appendChild(el("span",null,"地図"));return a;
   }
+  let stepEdit=null;
+  /* もしものとき（災害時の手順）。おうち情報の cat=disaster を順番どおりに番号つきで出す */
+  function disasterCard(){
+    const c=card("もしものとき","If Disaster Strikes",editBtn());if(editing)c.classList.add("editing");
+    c.appendChild(R("p","hint",editing?"✎で書きかえ、×で削除。下の欄で手順を追加できます":"災害が起きたら、この順番で動きます"));
+    const list=S.info.filter(x=>x.cat==="disaster").sort((a,b)=>(a.order??0)-(b.order??0));
+    if(!list.length)c.appendChild(R("p","empty","まだ手順がありません。編集から追加できます"));
+    list.forEach((x,i)=>{
+      const r=el("div","step");r.appendChild(el("span","no",String(i+1)));
+      const b=el("div","sb");
+      if(editing&&stepEdit===x.id){
+        const f=el("form","form");
+        const t1=el("input","in");t1.value=x.label;t1.maxLength=40;t1.setAttribute("aria-label","手順の見出し");
+        const t2=el("textarea","in");t2.value=x.value;t2.maxLength=600;t2.setAttribute("aria-label","手順の内容");
+        const row=el("div","row");const cancel=el("button","tool","やめる");cancel.type="button";cancel.onclick=()=>{stepEdit=null;render();};
+        row.append(btn("go","保存","check","submit"),cancel);f.append(t1,t2,row);
+        f.addEventListener("submit",e=>{e.preventDefault();const label=t1.value.trim(),value=t2.value.trim();if(!label||!db)return;
+          const y={id:x.id,cat:"disaster",label:label,value:value,order:x.order,update:true};stepEdit=null;
+          mutate(()=>{const z=S.info.find(q=>q.id===x.id);if(z){z.label=label;z.value=value;}},"api_add",["info",y],"保存しました");});
+        b.appendChild(f);
+      }else{b.appendChild(el("b",null,x.label));if(x.value)b.appendChild(el("div","val",x.value));}
+      r.appendChild(b);
+      if(editing&&stepEdit!==x.id){const acts=el("div","sacts");
+        const ed=el("button","x","✎");ed.type="button";ed.setAttribute("aria-label",x.label+"を書きかえ");ed.onclick=()=>{stepEdit=x.id;render();};
+        const dl=el("button","x","×");dl.type="button";dl.setAttribute("aria-label",x.label+"を削除");dl.onclick=()=>del("info",x.id,"手順を削除しました");
+        acts.append(ed,dl);r.appendChild(acts);}
+      c.appendChild(r);
+    });
+    if(editing){
+      const f=el("form","form");
+      const t1=el("input","in");t1.placeholder="手順の見出し（例: 家族の集合場所）";t1.maxLength=40;t1.setAttribute("aria-label","手順の見出し");
+      const t2=el("textarea","in");t2.placeholder="内容";t2.maxLength=600;t2.setAttribute("aria-label","手順の内容");
+      f.append(t1,t2,btn("go","手順を追加","plus","submit"));
+      f.addEventListener("submit",e=>{e.preventDefault();const label=t1.value.trim(),value=t2.value.trim();if(!label||!db)return;
+        const order=list.reduce((m,i)=>Math.max(m,i.order??0),0)+1;
+        const x={id:newId(),cat:"disaster",label:label,value:value,order:order,at:Date.now()};t1.value="";t2.value="";
+        mutate(()=>S.info.push(x),"api_add",["info",x],"追加しました");});
+      c.appendChild(f);
+    }
+    return c;
+  }
   function vInfo(v){
     const sec=SECS.find(s=>s.id===infoSec)||SECS[0];
     const tabs=el("div","sec-tabs");
@@ -1008,6 +1056,7 @@ function api(fn,args,opt){return fetch(API,Object.assign({method:"POST",credenti
       b.onclick=()=>{infoSec=s.id;editing=false;render();};tabs.appendChild(b);});
     v.appendChild(tabs);
 
+    if(sec.id==="emergency")v.appendChild(disasterCard());
     const c=card(sec.jp,sec.en,editBtn());
     if(editing)c.classList.add("editing");
     c.appendChild(R("p","hint",sec.hint));
